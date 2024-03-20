@@ -6,4 +6,5 @@
 
 
 ### 데이터셋<br>
-1) **EEG-ImageNet**
+1) **EEG-ImageNet**</br>
+[download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)
