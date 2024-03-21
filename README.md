@@ -15,7 +15,9 @@ GUI 프로그램 개발을 목적으로 한다.
 
 ## 데이터셋<br>
 1) **EEG-ImageNet**</br>
-[download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)
+[googledrive download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)</br>
 
-2) **A large and rich EEG dataset for modeling human visual object recognition**
+[참조] [github link] (https://github.com/perceivelab/eeg_visual_classification)
+
+2) **A large and rich EEG dataset for modeling human visual object recognition**</br>
 [download](https://osf.io/3jk45/)
