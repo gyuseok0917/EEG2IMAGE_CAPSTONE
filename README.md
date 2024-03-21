@@ -9,6 +9,6 @@
 이미지를 생성하여보여주는 GUI 프로그램 개발
 
 
-#### 데이터셋<br>
+## 데이터셋<br>
 1) **EEG-ImageNet**</br>
 [download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)
