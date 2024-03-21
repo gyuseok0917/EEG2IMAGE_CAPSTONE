@@ -15,7 +15,7 @@ GUI 프로그램 개발을 목적으로 한다.
 
 ## 데이터셋<br>
 (1) **EEG-ImageNet**</br>
-[googledrive download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)</br>
+[download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)</br>
 
 **[참조]** [github link](https://github.com/perceivelab/eeg_visual_classification)
 
