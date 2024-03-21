@@ -16,6 +16,8 @@ GUI 프로그램 개발을 목적으로 한다.
 
 
 ## 데이터셋<br>
+### EEG-Image 
+
 (1) **EEG-ImageNet**</br>
 [download](https://drive.google.com/drive/u/0/folders/1Nmoj1Qg3TkLtHvfp3ypKfPAiQZgBQcLJ)</br>
 
