@@ -30,8 +30,3 @@ EEG 데이터를 측정하여 공개한 EEG-Image 쌍 데이터이다. EEG는 12
 
 (2) [**A large and rich EEG dataset for modeling human visual object recognition**](https://osf.io/3jk45/)</br>
 64-channel
-
-### EEG-Text<br>
-
-(1) ZuCo 2.0</br>
-[download](https://osf.io/2urht/)

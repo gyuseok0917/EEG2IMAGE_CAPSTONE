@@ -38,10 +38,10 @@
     <widget class="QFrame" name="leftbottom_frame">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>430</y>
-       <width>151</width>
-       <height>281</height>
+       <x>0</x>
+       <y>420</y>
+       <width>171</width>
+       <height>301</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -60,9 +60,9 @@
     <widget class="QFrame" name="checkbox_frame">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>0</x>
        <y>180</y>
-       <width>151</width>
+       <width>171</width>
        <height>241</height>
       </rect>
      </property>
@@ -82,10 +82,10 @@
     <widget class="QFrame" name="status_frame">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>151</width>
-       <height>161</height>
+       <x>0</x>
+       <y>0</y>
+       <width>171</width>
+       <height>181</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -106,9 +106,9 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>440</y>
+      <y>430</y>
       <width>731</width>
-      <height>281</height>
+      <height>291</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -129,7 +129,7 @@
        <x>10</x>
        <y>20</y>
        <width>711</width>
-       <height>251</height>
+       <height>261</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -144,6 +144,16 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
+     <widget class="PlotWidget" name="graph" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>711</width>
+        <height>261</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
@@ -158,28 +168,28 @@
       <item>
        <widget class="QCheckBox" name="checkBox">
         <property name="text">
-         <string>CheckBox</string>
+         <string>8CH</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_3">
         <property name="text">
-         <string>CheckBox</string>
+         <string>128CH</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_4">
         <property name="text">
-         <string>CheckBox</string>
+         <string>OP 1</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_2">
         <property name="text">
-         <string>CheckBox</string>
+         <string>OP 2</string>
         </property>
        </widget>
       </item>
@@ -190,9 +200,9 @@
     <property name="geometry">
      <rect>
       <x>900</x>
-      <y>440</y>
+      <y>430</y>
       <width>181</width>
-      <height>281</height>
+      <height>291</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -350,6 +360,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

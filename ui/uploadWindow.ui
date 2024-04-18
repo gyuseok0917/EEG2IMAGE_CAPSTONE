@@ -2,20 +2,29 @@
 <ui version="4.0">
  <class>uploadWindow</class>
  <widget class="QDialog" name="uploadWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>282</width>
-    <height>90</height>
+    <width>327</width>
+    <height>111</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::ClickFocus</enum>
+  </property>
   <property name="windowTitle">
-   <string>업로드</string>
+   <string>Open</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QLineEdit" name="lineEdit">
+     <property name="text">
+      <string>Click here</string>
+     </property>
      <property name="placeholderText">
       <string>이곳을 클릭하세요.</string>
      </property>
@@ -23,8 +32,11 @@
    </item>
    <item row="0" column="1">
     <widget class="QPushButton" name="uploadButton">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
      <property name="text">
-      <string>업로드</string>
+      <string>open</string>
      </property>
     </widget>
    </item>

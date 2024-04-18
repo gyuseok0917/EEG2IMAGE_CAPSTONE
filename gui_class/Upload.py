@@ -26,5 +26,3 @@ class UploadWindow(QtWidgets.QDialog):  #업로드 창
         self.uploadCompleteWindow = UploadCompleteWindow()
         self.uploadCompleteWindow.show()
         self.uploadCompleteWindow.confirmButton.clicked.connect(self.close)
-
-  
