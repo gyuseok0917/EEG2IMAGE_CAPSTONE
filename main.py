@@ -1,25 +1,25 @@
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QPixmap
-from PyQt6 import QtWidgets, uic, QtCore, QtGui
+from PyQt6.QtGui import QAction
+from PyQt6 import  uic
 
-class UploadCompleteWindow(QtWidgets.QDialog):
+class UploadCompleteWindow(QDialog):
     def __init__(self):
         super(UploadCompleteWindow, self).__init__()
         uic.loadUi('./ui/uploadCompleteWindow.ui', self) 
-        self.confirmButton = self.findChild(QtWidgets.QPushButton, 'confirmButton') 
+        self.confirmButton = self.findChild(QPushButton, 'confirmButton') 
         self.confirmButton.clicked.connect(self.close)
 
-class UploadWindow(QtWidgets.QDialog):  #업로드 창
+class UploadWindow(QDialog):  #업로드 창
     def __init__(self):
         super(UploadWindow, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self) 
-        self.lineEdit = self.findChild(QtWidgets.QLineEdit, 'lineEdit') 
+        self.lineEdit = self.findChild(QLineEdit, 'lineEdit') 
         self.lineEdit.mousePressEvent = self.openFileDialog
-        self.uploadButton = self.findChild(QtWidgets.QPushButton, 'uploadButton') 
+        self.uploadButton = self.findChild(QPushButton, 'uploadButton') 
         self.uploadButton.clicked.connect(self.showUploadCompleteWindow)
 
     def openFileDialog(self, event):
-        fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '/home')
+        fname, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         if fname:
             self.lineEdit.setText(fname) 
 
@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         file_menu = self.menuBar().findChild(QMenu, 'menuFile') 
-        upload_action = QtGui.QAction('Upload', self)  
+        upload_action = QAction('Upload', self)  
         upload_action.triggered.connect(self.showUploadWindow) 
         file_menu.addAction(upload_action)  
         
