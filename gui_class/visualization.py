@@ -15,9 +15,6 @@ def eeg_plot(widget, eeg_data):
     # stack line plot 그리기
     for ch_idx in range(num_ch):
         widget.plot(np.arange(num_samples), eeg_data[ch_idx] + ch_idx * 3, pen = "b")
-    
-    # 축 범위 지정
-    widget.setRange(xRange = (0, 500), disableAutoRange=True)
 
     # Label 지정
     widget.setLabel("left", "Amplitude")
@@ -26,6 +23,6 @@ def eeg_plot(widget, eeg_data):
     # 눈금 수정
     channel_names = [f'Channel {i+1}' for i in range(num_ch)]
     widget.getAxis('left').setTicks([[(i * 3, name) for i, name in enumerate(channel_names)]])
-    widget.getAxis('bottom').setTicks([[(idx, f"{round(value, 2)}") for idx, value in zip(np.linspace(0, 500, 10), np.linspace(0, 1, 10))]])
+    widget.getAxis('bottom').setTicks([[(idx, f"{round(value, 2)}") for idx, value in zip(np.linspace(0, 500, 10), np.linspace(0, 0.5, 10))]])
 
     widget.showGrid(x = True, y = True)
