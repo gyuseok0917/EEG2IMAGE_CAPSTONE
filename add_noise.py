@@ -48,28 +48,29 @@ if __name__ == "__main__":
 
     eeg_data = torch.load(args.data_path)["dataset"]
 
-    # Dataset object to save
     data_dict = {
         "LR": [],
         "HR": []
     }
     
     for idx in tqdm(range(len(eeg_data))):
-        sample = eeg_data[idx]["eeg"].numpy().astype(np.float32)
+        sample = eeg_data[idx]["eeg"].numpy().astype(np.float32)[:, -440:]
         
         wgn_sample = add_white_gaussian_noise(sample, args.snr_ratio)
         
+        # B x C x E x T (1 x 1 x 16 x 440)
         wgn_8_sample = torch.cat(
             [wgn_sample[int(i), :].reshape(1, 1, 1, -1) for i in ch_order_list],
             axis = 2
         )
         
+        # B x C x E x T (1 x 1 x 128 x 440)
         lr_data = interpolate(wgn_8_sample, scale_factor = (16, 1), mode = 'bicubic')
-        hr_data = torch.FloatTensor(sample)
+        hr_data = torch.FloatTensor(sample).unsqueeze(0).unsqueeze(0)
         
         data_dict["LR"].append(lr_data)
         data_dict["HR"].append(hr_data)
-    
+        
     save_path = args.save_path.split(".")[0] + f"_snr_{args.snr_ratio}.pth"
     print(save_path)
     
