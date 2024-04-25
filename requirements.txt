@@ -1,0 +1,9 @@
+numpy
+matplotlib
+pandas
+scipy
+torch
+torchmetrics
+torchsummary
+einops
+mne

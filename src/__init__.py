@@ -1,1 +1,1 @@
-from src.model.deepcnn import DeepCNN
+from src.utils import *
