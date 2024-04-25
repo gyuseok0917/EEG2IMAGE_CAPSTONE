@@ -31,7 +31,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QPushButton" name="uploadButton">
+    <widget class="QPushButton" name="btn_UP_open">
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
      </property>

@@ -415,7 +415,7 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
-     <widget class="QWidget" name="origin_image_widget" native="true">
+     <widget class="QFrame" name="origin_image_frame">
       <property name="geometry">
        <rect>
         <x>-1</x>
