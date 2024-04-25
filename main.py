@@ -16,19 +16,17 @@ class MainWindow(QMainWindow):
         self.eeg_graph()
 
     def initUI(self):
-       
-        self.uploadButton = self.findChild(QPushButton, 'uploadButton') 
-        self.uploadButton.clicked.connect(self.showUploadWindow)
+        upload_action = self.findChild(QPushButton, 'uploadButton') 
+        self.uploadButton.clicked.connect(self.showUploadWindow) 
         
     def showUploadWindow(self):
         self.uploadWindow = UploadWindow()
         self.uploadWindow.show()
-        
 
     def eeg_graph(self):
         eeg_widget = self.findChild(pg.PlotWidget, "graph")
         eeg_plot(eeg_widget, np.random.randn(8, 500))
-
+        
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
