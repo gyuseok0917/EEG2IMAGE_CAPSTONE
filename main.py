@@ -2,7 +2,7 @@ import numpy as np
 import pyqtgraph as pg
 from PyQt6.QtWidgets import *
 from PyQt6 import  uic, QtGui, QtCore
-from gui_class import UploadWindow, eeg_plot
+from gui_class import UploadWindow, eeg_plot, UploadWindow_eeg
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -11,22 +11,25 @@ class MainWindow(QMainWindow):
         uic.loadUi('./ui/main.ui', self)
 
         self.initUI()
-        self.eeg_graph()
+        
 
     def initUI(self):
         self.uploadWindow = UploadWindow()
+        self.eeg_uploadWindow = UploadWindow_eeg()
+
         self.origin_image_frame = self.findChild(QFrame, 'origin_image_frame')
 
         self.uploadButton.clicked.connect(self.showUploadWindow) 
            # main.ui에 'uploadButton' 이 존재하기 때문에 findChidren 해줄 필요없음
-        
-
-           #uploadWindow 클래스(Upload.py)내에 존재하는 btn_UP_open 끌어옴. 
+        self.EEG_upload.clicked.connect(self.showUploadWindow_eeg) 
 
     def showUploadWindow(self):
         self.uploadWindow.btn_UP_open.clicked.connect(self.displayImage)
-        
         self.uploadWindow.show()
+
+    def showUploadWindow_eeg(self):
+        self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_graph)
+        self.eeg_uploadWindow.show()
 
     def eeg_graph(self):
         eeg_widget = self.findChild(pg.PlotWidget, "graph")
