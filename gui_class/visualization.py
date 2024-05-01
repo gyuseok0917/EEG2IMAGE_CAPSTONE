@@ -1,14 +1,14 @@
 import numpy as np
 
 
-def eeg_plot(widget, eeg_data):
+def eeg_plot(widget, eeg_data: np.ndarray):
     """
     EEG 데이터를 시각화하는 함수
 
     Args:
         widget: 시각화할 widget object
     """
-
+    
     # 채널 수 및 샘플 길이
     num_ch, num_samples = eeg_data.shape
 

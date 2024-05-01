@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import *
 from PyQt6 import  uic, QtGui, QtCore
 from gui_class import UploadWindow, eeg_plot, UploadWindow_eeg
 
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -31,11 +33,14 @@ class MainWindow(QMainWindow):
         self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_graph)
         self.eeg_uploadWindow.show()
 
-    def eeg_graph(self):
-        eeg_widget = self.findChild(pg.PlotWidget, "graph")
-        eeg_plot(eeg_widget, np.random.randn(8, 500))
+    def eeg_graph(self, eeg_data):
+        if isinstance(eeg_data, np.ndarray):
+            eeg_widget = self.findChild(pg.PlotWidget, "graph")
+            eeg_plot(eeg_widget, eeg_data)     
+        else:
+            print("Main.py Alert : eeg_graph에 전달된 데이터는 NumPy 배열이 아닙니다. 수신된 데이터 유형:", type(eeg_data))
 
-    
+        
     def displayImage(self):  # 이미지 띄우기
         if self.uploadWindow.filePath:  # 파일 경로가 있는 경우
             
