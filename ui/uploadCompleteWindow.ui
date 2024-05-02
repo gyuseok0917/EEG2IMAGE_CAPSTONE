@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConfirmWindow</class>
+ <widget class="QDialog" name="ConfirmWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>177</width>
+    <height>80</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>업로드 완료</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>142</y>
+     <width>77</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>41</x>
+     <y>15</y>
+     <width>92</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string> 업로드 완료!</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="confirmButton">
+      <property name="text">
+       <string>확인</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
