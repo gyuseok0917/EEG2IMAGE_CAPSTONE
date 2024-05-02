@@ -5,7 +5,7 @@ from typing import List
 from torch.utils.tensorboard import SummaryWriter
 
 
-def make_dirs(dirs: str or List[str]):
+def make_dirs(dirs):
     """
     Funtion to create folders.
     
@@ -51,7 +51,7 @@ def set_logging(save_path = None):
     return logging
 
 
-class TensorBoradSummary:
+class TensorBoardSummary:
     """
     Functions to use Tensorboard usefully
     """   

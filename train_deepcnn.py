@@ -14,7 +14,7 @@ from src import GetLoader
 from src.model import DeepCNN
 from src.train import Meter, LossMeter, MetricMeter
 from src.train import signal_to_noise_ratio, pearson_correlation_coefficient
-from src.train import make_dirs, set_logging, TensorBoradSummary, EarlyStoping
+from src.train import make_dirs, set_logging, TensorBoardSummary, EarlyStoping
 
 
 def parse_args():
@@ -134,7 +134,7 @@ def main(
     )
     
     # Tensorboard
-    tensorboard = TensorBoradSummary(log_dir)
+    tensorboard = TensorBoardSummary(log_dir)
     
     
     for iters in range(max_iters):
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     model = DeepCNN().to(device)
     
     criterion = MSELoss()
-    optimizer = Adam(model.parameters(), lr = args.leraning_rate)
+    optimizer = Adam(model.parameters(), lr = args.learning_rate)
     
     metric = {
         "SNR": signal_to_noise_ratio,
