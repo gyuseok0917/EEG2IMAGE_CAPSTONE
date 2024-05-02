@@ -1,4 +1,5 @@
 from PyQt6 import QtWidgets, uic, QtGui, QtCore
+from PyQt6.QtCore import pyqtSignal
 import mne
 import numpy as np 
 
@@ -29,6 +30,7 @@ class UploadWindow(QtWidgets.QDialog):  # 업로드 창
    
 
 class UploadWindow_eeg(QtWidgets.QDialog):
+    eegDataLoaded = pyqtSignal(np.ndarray, float)
     def __init__(self):
         super(UploadWindow_eeg, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
@@ -38,13 +40,14 @@ class UploadWindow_eeg(QtWidgets.QDialog):
         self.filePath = ""
         self.EEG_upload_btn.clicked.connect(self.loadAndClose)
 
-    def openFileDialog(self, event):
+    def openFileDialog(self):
         filters = "EEG file (*.fif);"
         fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'EEG file Open', QtCore.QDir.homePath(), filters)
 
         if fname:
             self.lineEdit.setText(fname)
             self.filePath = fname
+            self.loadAndClose()
           
     def loadAndClose(self):
         
@@ -54,23 +57,18 @@ class UploadWindow_eeg(QtWidgets.QDialog):
             print(self.filePath)
             try:
                 raw = mne.io.read_raw_fif(self.filePath, preload=True)
-                eeg_data = raw.get_data()
+                eeg_data = raw.get_data()[:8]
+                sfreq = raw.info["sfreq"]
                 print("데이터 로드 중, 데이터 유형 확인 중.")
                 if isinstance(eeg_data, np.ndarray):
                     print("Upload.py Alert : 데이터는 NumPy 배열입니다.")
+                    self.eegDataLoaded.emit(eeg_data, sfreq)
                 else:
                     print("Upload.py Alert : 로드된 데이터는 NumPy 배열이 아닙니다. 데이터 형식:", type(eeg_data))
             except Exception as e:
                 print("Upload.py Alert : Error loading EEG data:", e)
             finally:
                 self.close()
-            # try:
-            #     print("Loading EEG data from:", self.filePath)
-            #     raw = mne.io.read_raw_fif(self.filePath, preload=True)
-            #     eeg_data = raw.get_data()
-            #     print("Data loaded, checking data type...")
-            #     if isinstance(eeg_data, np.ndarray):
-            #         print("Data is a NumPy array.")
             #     else:
             #         print("Data loaded is not a NumPy array. Data type:", type(eeg_data))
             # except Exception as e:
