@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1085</width>
+    <width>1288</width>
     <height>767</height>
    </rect>
   </property>
@@ -56,6 +56,19 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Header</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QFrame" name="checkbox_frame">
      <property name="geometry">
@@ -78,6 +91,45 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
+     <widget class="QSpinBox" name="ImageNumber">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>10</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Image Number</string>
+      </property>
+      <property name="margin">
+       <number>2</number>
+      </property>
+     </widget>
     </widget>
     <widget class="QFrame" name="status_frame">
      <property name="geometry">
@@ -100,6 +152,59 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
+     <widget class="QWidget" name="create_image_widget_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>629</x>
+        <y>39</y>
+        <width>441</width>
+        <height>411</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="create_image_widget_3" native="true">
+      <property name="geometry">
+       <rect>
+        <x>629</x>
+        <y>69</y>
+        <width>441</width>
+        <height>411</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>0</y>
+        <width>91</width>
+        <height>181</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="uploadButton">
+         <property name="text">
+          <string>Image Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="EEG_upload">
+         <property name="text">
+          <string>EEG Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="startButton">
+         <property name="text">
+          <string>Start</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QFrame" name="bottom_frame">
@@ -161,7 +266,7 @@
        <x>10</x>
        <y>0</y>
        <width>344</width>
-       <height>18</height>
+       <height>22</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -182,16 +287,22 @@
       <item>
        <widget class="QCheckBox" name="checkBox_4">
         <property name="text">
-         <string>OP 1</string>
+         <string>TopoMap</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox_2">
-        <property name="text">
-         <string>OP 2</string>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-       </widget>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -201,7 +312,7 @@
      <rect>
       <x>900</x>
       <y>430</y>
-      <width>181</width>
+      <width>281</width>
       <height>291</height>
      </rect>
     </property>
@@ -245,7 +356,7 @@
      <rect>
       <x>170</x>
       <y>0</y>
-      <width>911</width>
+      <width>1011</width>
       <height>431</height>
      </rect>
     </property>
@@ -264,11 +375,20 @@
     <widget class="QFrame" name="origin_image">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>10</y>
        <width>431</width>
        <height>411</height>
       </rect>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::NoContextMenu</enum>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
      </property>
      <property name="frameShape">
       <enum>QFrame::Panel</enum>
@@ -282,11 +402,22 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
+     <widget class="QFrame" name="origin_image_frame">
+      <property name="geometry">
+       <rect>
+        <x>-1</x>
+        <y>-1</y>
+        <width>431</width>
+        <height>411</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout"/>
+     </widget>
     </widget>
     <widget class="QFrame" name="create_image">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>550</x>
        <y>10</y>
        <width>441</width>
        <height>411</height>
@@ -304,6 +435,16 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
+     <widget class="QWidget" name="create_image_widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>-1</x>
+        <y>-1</y>
+        <width>441</width>
+        <height>411</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -312,7 +453,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1085</width>
+     <width>1288</width>
      <height>21</height>
     </rect>
    </property>
@@ -320,7 +461,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionUpload_2"/>
+    <addaction name="OPEN"/>
    </widget>
    <widget class="QMenu" name="menuOption">
     <property name="title">
@@ -356,7 +497,12 @@
   </action>
   <action name="actionUpload_2">
    <property name="text">
-    <string>Upload</string>
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="OPEN">
+   <property name="text">
+    <string>OPEN</string>
    </property>
   </action>
  </widget>
