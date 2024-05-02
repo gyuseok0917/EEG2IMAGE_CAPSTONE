@@ -30,13 +30,18 @@ class MainWindow(QMainWindow):
         self.uploadWindow.show()
 
     def showUploadWindow_eeg(self):
-        self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_graph)
+        # 기존에 연결된 모든 신호를 제거하고 새로 연결 (여러 번 창을 열 때 중복 연결을 방지)
+        self.eeg_uploadWindow.EEG_upload_btn.clicked.disconnect()
+        self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_uploadWindow.openFileDialog)
+
+        # 사용자 정의 신호와 eeg_graph 메소드를 연결
+        self.eeg_uploadWindow.eegDataLoaded.connect(self.eeg_graph)
         self.eeg_uploadWindow.show()
 
-    def eeg_graph(self, eeg_data):
+    def eeg_graph(self, eeg_data, sfreq):
         if isinstance(eeg_data, np.ndarray):
             eeg_widget = self.findChild(pg.PlotWidget, "graph")
-            eeg_plot(eeg_widget, eeg_data)     
+            eeg_plot(eeg_widget, eeg_data, sfreq)     
         else:
             print("Main.py Alert : eeg_graph에 전달된 데이터는 NumPy 배열이 아닙니다. 수신된 데이터 유형:", type(eeg_data))
 
