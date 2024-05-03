@@ -40,7 +40,7 @@ class UploadWindow_eeg(QtWidgets.QDialog):
         self.filePath = ""
         self.EEG_upload_btn.clicked.connect(self.loadAndClose)
 
-    def openFileDialog(self):
+    def openFileDialog(self,event):
         filters = "EEG file (*.fif);"
         fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'EEG file Open', QtCore.QDir.homePath(), filters)
 
