@@ -60,13 +60,14 @@ class UploadWindow_eeg(QtWidgets.QDialog):
             self.loadAndClose()
 
 
-    def generation_visualization(self):
-        data = self.raw.get_data()
+    def generation_visualization(self, number):
+        print("Image Number :",number)
+        data = self.raw.get_data()  
         data_bytes = data.tobytes()
         compressed_data = zlib.compress(data_bytes)
         encoded_data = base64.b64encode(compressed_data).decode('utf-8')
                 
-        json_data = json.dumps({'eeg_data': encoded_data, "shape": (data.shape)})
+        json_data = json.dumps({'eeg_data': encoded_data, "shape": (data.shape), "number": number})
         self.send_data(json_data)
 
         self.eegDataLoaded.emit(self.raw)
