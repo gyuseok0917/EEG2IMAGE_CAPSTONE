@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal, QThread, QObject
 
 
 class EEGPlotter(QObject):
@@ -40,6 +40,7 @@ class EEGPlotter(QObject):
 
         self.region.setRegion([0, 0])
         self.widget.addItem(self.region, ignoreBounds=True)
+
         self.region.sigRegionChanged.connect(self.onRegionChanged)
 
     def onRegionChanged(self):
@@ -50,7 +51,6 @@ class EEGPlotter(QObject):
         if t_max > self.num_samples:
             t_max = self.num_samples
         self.regionChanged.emit(t_min, t_max)
-    
 
 
 def topomap(raw_eeg, tmin, tmax):
@@ -70,7 +70,10 @@ def topomap(raw_eeg, tmin, tmax):
         topo_data, eeg_info, show = False, cmap = 'coolwarm',
         sensors = False, res = 1000, axes=ax, size = 2, vlim = (-1, 1)
     )
-    ax.set_title('%.2f-%.2f [s]' % (tmin / eeg_info["sfreq"], tmax / eeg_info["sfreq"]))
+    if tmin / eeg_info["sfreq"] ==  tmax / eeg_info["sfreq"]:
+        ax.set_title('%.2f [s]' % (tmin / eeg_info["sfreq"]))
+    else:
+        ax.set_title('%.2f-%.2f [s]' % (tmin / eeg_info["sfreq"], tmax / eeg_info["sfreq"]))
     fig.colorbar(im)
 
     fig.canvas.draw()
