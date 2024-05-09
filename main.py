@@ -9,21 +9,23 @@ from gui_class import UploadWindow, EEGPlotter, topomap, UploadWindow_eeg
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-
         uic.loadUi('./ui/main.ui', self)
         self.initUI()
+
         
 
     def initUI(self):
         self.uploadWindow = UploadWindow()
         self.eeg_uploadWindow = UploadWindow_eeg()
-
-        self.origin_image_frame = self.findChild(QFrame, 'origin_image_frame') # Image
-        self.right_bottom_frame = self.findChild(QFrame, 'right_bottom_frame') # Topomap
-
-        self.uploadButton.clicked.connect(self.showUploadWindow) 
-           # main.ui에 'uploadButton' 이 존재하기 때문에 findChidren 해줄 필요없음
-        self.EEG_upload.clicked.connect(self.showUploadWindow_eeg) 
+        self.origin_image_frame = self.findChild(QFrame, 'origin_image_frame')  # Image
+        self.right_bottom_frame = self.findChild(QFrame, 'right_bottom_frame')  # Topomap
+        self.serverImageLabel = QLabel(self.findChild(QWidget, 'create_image_widget'))
+        self.serverImageLabel.setGeometry(0, 0, self.serverImageLabel.parent().width(), self.serverImageLabel.parent().height())
+        self.serverImageLabel.setScaledContents(True)
+        self.uploadButton.clicked.connect(self.showUploadWindow)
+        self.EEG_upload.clicked.connect(self.showUploadWindow_eeg)
+        self.eeg_uploadWindow.eegDataLoaded.connect(self.eeg_graph)
+        self.eeg_uploadWindow.imageDataReceived.connect(self.displayServerImage)  # 이미지 데이터 수신 신호 연결
 
 
     def showUploadWindow(self):
@@ -35,8 +37,6 @@ class MainWindow(QMainWindow):
         # 기존에 연결된 모든 신호를 제거하고 새로 연결 (여러 번 창을 열 때 중복 연결을 방지)
         self.eeg_uploadWindow.EEG_upload_btn.clicked.disconnect()
         self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_uploadWindow.openFileDialog)
-
-        # 사용자 정의 신호와 eeg_graph 메소드를 연결
         self.eeg_uploadWindow.eegDataLoaded.connect(self.eeg_graph)
         self.eeg_uploadWindow.show()
 
@@ -51,6 +51,11 @@ class MainWindow(QMainWindow):
             label.setScaledContents(True)  # 이미지의 크기를 레이블 크기에 맞추어 조정   
             label.show()  # 레이블 보이기
 
+    def displayServerImage(self, image_data):
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(image_data)
+        self.serverImageLabel.setPixmap(pixmap)
+        self.serverImageLabel.show()
 
     def eeg_graph(self, raw_eeg):
         if isinstance(raw_eeg, Raw):

@@ -2,7 +2,11 @@ import mne
 import numpy as np 
 from mne.io.fiff.raw import Raw
 from PyQt6 import QtWidgets, uic, QtGui, QtCore
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QUrl
+from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+import base64
+import zlib
+import json
 
 class UploadWindow(QtWidgets.QDialog):  # 업로드 창
     def __init__(self):
@@ -31,6 +35,8 @@ class UploadWindow(QtWidgets.QDialog):  # 업로드 창
 
 class UploadWindow_eeg(QtWidgets.QDialog):
     eegDataLoaded = pyqtSignal(Raw)
+    imageDataReceived = pyqtSignal(bytes)  # 이미지 데이터 수신 신호
+
     def __init__(self):
         super(UploadWindow_eeg, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
@@ -39,6 +45,7 @@ class UploadWindow_eeg(QtWidgets.QDialog):
         self.EEG_upload_btn = self.findChild(QtWidgets.QPushButton, 'btn_UP_open')
         self.filePath = ""
         self.EEG_upload_btn.clicked.connect(self.loadAndClose)
+        self.network_manager = QNetworkAccessManager(self)
 
     def openFileDialog(self,event):
         filters = "EEG file (*.fif);"
@@ -50,21 +57,50 @@ class UploadWindow_eeg(QtWidgets.QDialog):
             self.loadAndClose()
           
     def loadAndClose(self):
-        
         if self.filePath:
-         
-           
-            print(self.filePath)
             try:
                 raw = mne.io.read_raw_fif(self.filePath, preload=True)
-                raw = raw.pick_types(eeg = True)
-                print("데이터 로드 중, 데이터 유형 확인 중.")
+                raw = raw.pick_types(eeg=True)
                 if isinstance(raw, Raw):
-                    print("Upload.py Alert : 데이터는 Raw 객체입니다.")
+                    print("데이터 로드 중, 데이터 유형 확인 중.")
+
+                    # 데이터 추출 및 인코딩
+                    data = raw.get_data()
+                    data_bytes = data.tobytes()
+                    compressed_data = zlib.compress(data_bytes)
+                    encoded_data = base64.b64encode(compressed_data).decode('utf-8')
+                           
+                    json_data = json.dumps({'eeg_data': encoded_data})
+                    self.send_data(json_data)
+
                     self.eegDataLoaded.emit(raw)
                 else:
-                    print("Upload.py Alert : 로드된 데이터는 Raw 객체가 아닙니다. 데이터 형식:", type(raw))
+                    print("로드된 데이터는 Raw 객체가 아닙니다. 데이터 형식:", type(raw))
             except Exception as e:
-                print("Upload.py Alert : Error loading EEG data:", e)
+                print("EEG 데이터 로딩 오류:", e)
             finally:
                 self.close()
+
+    def send_data(self, json_data):
+        # 서버 URL 설정
+        url = QUrl('http://210.119.103.61:5000/transfer')
+        request = QNetworkRequest(url)
+        request.setHeader(QNetworkRequest.KnownHeaders.ContentTypeHeader, 'application/json')
+        
+            # 데이터 전송
+        reply = self.network_manager.post(request, json_data.encode('utf-8'))
+        reply.finished.connect(self.handle_response)
+
+    def handle_response(self):
+        reply = self.sender()
+        if reply.error() == QNetworkReply.NetworkError.NoError:
+            response_data = reply.readAll()
+            # 데이터 형식의 유효성을 확인하고 신호를 발생시킵니다.
+            if response_data:
+                # QByteArray를 bytes로 변환
+                response_bytes = bytes(response_data)
+                self.imageDataReceived.emit(response_bytes)  # 이미지 데이터 수신 신호 발생
+            else:
+                print("Received empty data from server.")
+        else:
+            print("Network error occurred:", reply.errorString())
