@@ -27,6 +27,8 @@ class MainWindow(QMainWindow):
         self.eeg_uploadWindow.eegDataLoaded.connect(self.eeg_graph)
         self.eeg_uploadWindow.imageDataReceived.connect(self.displayServerImage)  # 이미지 데이터 수신 신호 연결
 
+        self.startButton.clicked.connect(self.eeg_uploadWindow.generation_visualization) # start buttion 클릭 시 실행
+
 
     def showUploadWindow(self):
         self.uploadWindow.btn_UP_open.clicked.connect(self.displayImage)
