@@ -70,7 +70,7 @@ class UploadWindow_eeg(QtWidgets.QDialog):
                     compressed_data = zlib.compress(data_bytes)
                     encoded_data = base64.b64encode(compressed_data).decode('utf-8')
                            
-                    json_data = json.dumps({'eeg_data': encoded_data})
+                    json_data = json.dumps({'eeg_data': encoded_data, 'shape': data.shape})
                     self.send_data(json_data)
 
                     self.eegDataLoaded.emit(raw)
