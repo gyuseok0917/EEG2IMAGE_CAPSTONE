@@ -91,45 +91,6 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
-     <widget class="QSpinBox" name="ImageNumber">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>30</y>
-        <width>31</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>10</number>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>111</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Image Number</string>
-      </property>
-      <property name="margin">
-       <number>2</number>
-      </property>
-     </widget>
     </widget>
     <widget class="QFrame" name="status_frame">
      <property name="geometry">
@@ -193,6 +154,16 @@
         <widget class="QPushButton" name="EEG_upload">
          <property name="text">
           <string>EEG Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="ImageNumber">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
        </item>
@@ -271,6 +242,13 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Graph Option : </string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="checkBox">
         <property name="text">
          <string>8CH</string>
@@ -280,14 +258,21 @@
       <item>
        <widget class="QCheckBox" name="checkBox_3">
         <property name="text">
-         <string>128CH</string>
+         <string>32CH</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_4">
         <property name="text">
-         <string>TopoMap</string>
+         <string>64CH</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_5">
+        <property name="text">
+         <string>128CH</string>
         </property>
        </widget>
       </item>
