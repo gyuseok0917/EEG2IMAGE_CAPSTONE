@@ -30,7 +30,6 @@ class UploadWindow(QtWidgets.QDialog):  # 업로드 창
         if fname:
             self.lineEdit.setText(fname)
             self.filePath = fname  # 파일 경로 저장
-
    
 
 class UploadWindow_eeg(QtWidgets.QDialog):
@@ -40,14 +39,18 @@ class UploadWindow_eeg(QtWidgets.QDialog):
     def __init__(self):
         super(UploadWindow_eeg, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
+
+
+        self.filePath = ""
+        self.raw = None
+
         self.lineEdit = self.findChild(QtWidgets.QLineEdit, 'lineEdit')
         self.lineEdit.mousePressEvent = self.openFileDialog
         self.EEG_upload_btn = self.findChild(QtWidgets.QPushButton, 'btn_UP_open')
-        self.filePath = ""
         self.EEG_upload_btn.clicked.connect(self.loadAndClose)
         self.network_manager = QNetworkAccessManager(self)
 
-    def openFileDialog(self,event):
+    def openFileDialog(self, event):
         filters = "EEG file (*.fif);"
         fname, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'EEG file Open', QtCore.QDir.homePath(), filters)
 
@@ -55,27 +58,29 @@ class UploadWindow_eeg(QtWidgets.QDialog):
             self.lineEdit.setText(fname)
             self.filePath = fname
             self.loadAndClose()
-          
+
+
+    def generation_visualization(self):
+        data = self.raw.get_data()
+        data_bytes = data.tobytes()
+        compressed_data = zlib.compress(data_bytes)
+        encoded_data = base64.b64encode(compressed_data).decode('utf-8')
+                
+        json_data = json.dumps({'eeg_data': encoded_data, "shape": (data.shape)})
+        self.send_data(json_data)
+
+        self.eegDataLoaded.emit(self.raw)
+
+       
     def loadAndClose(self):
         if self.filePath:
             try:
-                raw = mne.io.read_raw_fif(self.filePath, preload=True)
-                raw = raw.pick_types(eeg=True)
-                if isinstance(raw, Raw):
+                self.raw = mne.io.read_raw_fif(self.filePath, preload=True)
+                self.raw = self.raw.pick_types(eeg=True)
+                if isinstance(self.raw, Raw):
                     print("데이터 로드 중, 데이터 유형 확인 중.")
-
-                    # 데이터 추출 및 인코딩
-                    data = raw.get_data()
-                    data_bytes = data.tobytes()
-                    compressed_data = zlib.compress(data_bytes)
-                    encoded_data = base64.b64encode(compressed_data).decode('utf-8')
-                           
-                    json_data = json.dumps({'eeg_data': encoded_data, 'shape': data.shape})
-                    self.send_data(json_data)
-
-                    self.eegDataLoaded.emit(raw)
                 else:
-                    print("로드된 데이터는 Raw 객체가 아닙니다. 데이터 형식:", type(raw))
+                    print("로드된 데이터는 Raw 객체가 아닙니다. 데이터 형식:", type(self.raw))
             except Exception as e:
                 print("EEG 데이터 로딩 오류:", e)
             finally:
