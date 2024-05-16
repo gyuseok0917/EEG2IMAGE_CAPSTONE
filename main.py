@@ -83,7 +83,6 @@ class MainWindow(QMainWindow):
         number = self.ImageNumber.value()  # UI에서 설정한 이미지 번호 가져오기
         self.eeg_uploadWindow.generation_visualization(number)  # 시각화 생성 함수 호출
         self.loading_movie.start()  # 로딩 애니메이션 시작
-        print("start loading")
 
     # 이미지 업로드 창 표시 함수
     def showUploadWindow(self):
