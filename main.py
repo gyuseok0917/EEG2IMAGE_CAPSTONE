@@ -13,7 +13,6 @@ class MainWindow(QMainWindow):
         self.initUI()  # UI 초기화 함수 호출
         self.nextBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
         self.prevBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
-
     # UI 초기화 함수
     def initUI(self):
         self.uploadWindow = UploadWindow()  # 업로드 창 인스턴스 생성
@@ -53,7 +52,6 @@ class MainWindow(QMainWindow):
     def displayServerImage(self, image_path):
         self.loading_movie.stop()  # 로딩 애니메이션 중지
         self.startButton.setEnabled(True)  # 버튼 활성화
-
         pixmap = QtGui.QPixmap()  # QPixmap 객체 생성
         pixmap.load(image_path)  # 이미지 파일 경로를 사용하여 QPixmap에 로드
         self.serverImageLabel.setPixmap(pixmap)  # 레이블에 QPixmap 설정
@@ -113,7 +111,6 @@ class MainWindow(QMainWindow):
     # 서버에서 받은 이미지 표시 함수
     def displayServerImage(self, image_path):
         self.loading_movie.stop()  # 로딩 애니메이션 중지
-        print("stop loading")
         self.startButton.setEnabled(True)  # 버튼 활성화
 
         pixmap = QtGui.QPixmap()  # QPixmap 객체 생성

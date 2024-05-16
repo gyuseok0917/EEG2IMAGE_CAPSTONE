@@ -200,7 +200,8 @@ class UploadWindow_eeg(QtWidgets.QDialog):
             reply = self.sender()
             if reply.error() == QNetworkReply.NetworkError.NoError:
                 response_data = reply.readAll()
-                
+                self.response_bytes = None
+                self.image_paths = []   
                 if response_data:
                     self.response_bytes = bytes(response_data)
                     
@@ -230,36 +231,4 @@ class UploadWindow_eeg(QtWidgets.QDialog):
                     print("Received empty data from server.")
             else:
                 print("Network error occurred:", reply.errorString())
-            reply = self.sender()
-            if reply.error() == QNetworkReply.NetworkError.NoError:
-                response_data = reply.readAll()
-                
-                if response_data:
-                    self.response_bytes = bytes(response_data)
-                    
-                    try:
-                        json_data = json.loads(self.response_bytes)
-                        print("JSON Data:", json_data)  # JSON 데이터 출력하여 구조 확인
-                        
-                        image_list = json_data.get('images', [])
-                        
-                        self.image_paths = []
-                        for index, image_base64 in enumerate(image_list):
-                            print("Image Data:", image_base64)  # 확인용 출력
-                            
-                            image_bytes = base64.b64decode(image_base64)
-                            image_path = f"image_{index}.png"
-                            
-                            with open(image_path, 'wb') as image_file:
-                                image_file.write(image_bytes)
-                            
-                            self.image_paths.append(image_path)
-                        
-                        self.imageDataReceived.emit(self.image_paths)  # list 타입으로 emit
-                        
-                    except json.JSONDecodeError:
-                        print("Failed to decode JSON data.")
-                else:
-                    print("Received empty data from server.")
-            else:
-                print("Network error occurred:", reply.errorString())
+           
