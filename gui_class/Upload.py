@@ -106,7 +106,6 @@ class UploadWindow_eeg(QtWidgets.QDialog):
                     
                     self.image_paths = []
                     for index, image_base64 in enumerate(image_list):
-                        # print("Image Data:", image_base64)  # 확인용 출력
                         
                         image_bytes = base64.b64decode(image_base64)
                         image_path = f"image_{index}.png"

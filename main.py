@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         # 버튼 클릭 시 연결될 함수 설정
         self.uploadButton.clicked.connect(self.showUploadWindow)
         self.EEG_upload.clicked.connect(self.showUploadWindow_eeg)
-        self.eeg_uploadWindow.eegDataLoaded.connect(self.eeg_graph)  # EEG 데이터 로드 신호 연결
+
         self.eeg_uploadWindow.imageDataReceived.connect(self.update_image_paths)  # 이미지 데이터 수신 신호 연결
         self.startButton.clicked.connect(self.handle_start)
 
