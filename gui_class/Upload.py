@@ -112,19 +112,17 @@ class UploadWindow_eeg(QDialog):
                         
                         with open(image_path, 'wb') as image_file:
                             image_file.write(image_bytes) 
-                        self.image_paths.append(image_path)
+                            self.image_paths.append(image_path)
 
                     # for문 종료되면 호출 메소드 emit 실행 
                     self.imageDataReceived.emit(self.image_paths) 
                 
 
                     # 서버에서 받은 eeg 데이터 
-                    encoded_data = json_data['eeg_data'] # Encoded eeg data
-                    data_shape = json_data["shape"]      # EEG data's shape
-                    compressed_data = base64.b64decode(encoded_data) # Decode base64 format
-                    data_bytes = zlib.decompress(compressed_data) # Restore compressed data
-                    print('frombuffer shape print : ',np.frombuffer(data_bytes, dtype=np.float64).shape)
-                    # Convert byte form to numpy matrix (reshape to size of original data)
+                    encoded_data = json_data['eeg_data'] 
+                    data_shape = json_data["shape"]      
+                    compressed_data = base64.b64decode(encoded_data)
+                    data_bytes = zlib.decompress(compressed_data) 
                     data_array = np.frombuffer(data_bytes, dtype=np.float64).reshape(data_shape)
 
                     self.eegDataReceived.emit(data_array, self.raw.info)

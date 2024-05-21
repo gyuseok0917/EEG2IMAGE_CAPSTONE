@@ -4,10 +4,9 @@ from mne.io.fiff.raw import Raw
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtGui import *
-from gui_class import UploadWindow, EEGPlotter, topomap, UploadWindow_eeg
+from gui_class import UploadWindow, EEGPlotter, topomap, UploadWindow_eeg, ImageSlider
 
 class MainWindow(QMainWindow):
-
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('./ui/main.ui', self)  # UI 파일 로드
@@ -39,33 +38,18 @@ class MainWindow(QMainWindow):
         # eegDataReceived 호출 
         self.eeg_uploadWindow.eegDataReceived.connect(self.eeg_graph)
 
-        self.image_paths = []
-        self.current_index = 0   
-        # 생성 이미지 이전 / 다음 버튼 
-        self.prevBtn.clicked.connect(self.show_prev_image)    
-        self.nextBtn.clicked.connect(self.show_next_image) 
-        self.nextBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
-        self.prevBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
+        # 이미지 슬라이더 생성
+        self.imageSlider = ImageSlider(self.create_image_widget, self.prevBtn, self.nextBtn)
+    
+    # 이미지 업로드 창 
+    def showUploadWindow(self):
+        self.uploadWindow.show()  # 업로드 창 표시
+        self.uploadWindow.btn_UP_open.clicked.connect(self.displayImage_origin) 
 
-    def show_next_image(self):
-        if self.image_paths:
-            self.current_index = (self.current_index + 1) % len(self.image_paths)
-            self.displayimage_server(self.image_paths[self.current_index])
-
-    def show_prev_image(self):
-        if self.image_paths:
-            self.current_index = (self.current_index - 1) % len(self.image_paths)
-            self.displayimage_server(self.image_paths[self.current_index])
-
-    def enterEvent(self, event):
-        self.prevBtn.setStyleSheet("QPushButton { opacity: 1.0; }")
-        self.nextBtn.setStyleSheet("QPushButton { opacity: 1.0; }")
-        super().enterEvent(event)
-
-    def leaveEvent(self, event):
-        self.prevBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
-        self.nextBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
-        super().leaveEvent(event)
+    # EEG 업로드 창 
+    def showUploadWindow_eeg(self):
+        self.eeg_uploadWindow.show()  
+        self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_uploadWindow.openFileDialog)
 
     # 시작 버튼 클릭 시 실행될 함수
     def handle_start(self):
@@ -74,19 +58,7 @@ class MainWindow(QMainWindow):
         self.eeg_uploadWindow.generation_visualization(number)  # 시각화 생성 함수 호출
         self.loading_movie.start()  # 로딩 애니메이션 시작
 
-    # 이미지 업로드 창 표시 함수
-    def showUploadWindow(self):
-        self.uploadWindow.btn_UP_open.clicked.connect(self.displayImage_origin)  # 업로드 버튼 클릭 시 displayImage 함수 연결
-        self.uploadWindow.show()  # 업로드 창 표시
-
-    # EEG 업로드 창 표시 함수
-    def showUploadWindow_eeg(self):
-        # 기존에 연결된 모든 신호를 제거하고 새로 연결 (중복 연결 방지)
-        # self.eeg_uploadWindow.EEG_upload_btn.clicked.disconnect()
-        self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_uploadWindow.openFileDialog)
-        self.eeg_uploadWindow.show()  
-
-    # 업로드된 이미지 표시 함수
+    # 업로드된 이미지 표시 
     def displayImage_origin(self):
         if self.uploadWindow.filePath:  # 파일 경로가 있는 경우
             label = QLabel(self.origin_image_frame)  # 레이블 생성
@@ -96,16 +68,15 @@ class MainWindow(QMainWindow):
             label.setScaledContents(True)  # 이미지 크기를 레이블에 맞추기
             label.show()  # 레이블 표시
 
-    # 서버에서 받은 이미지 표시 
+    # 서버에서 받은 이미지 표시
     def displayimage_server(self, paths):
-        self.image_paths = paths
-        if self.image_paths:
+        self.imageSlider.image_paths = paths
+        if self.imageSlider.image_paths:
             self.loading_movie.stop()  # 로딩 애니메이션 중지
             self.startButton.setEnabled(True)  # 버튼 활성화
-            pixmap = QPixmap()  # QPixmap 객체 생성
-            pixmap.load(self.image_paths[0])  # 이미지 파일 경로를 사용하여 QPixmap에 로드
-            self.create_image_widget.setPixmap(pixmap)  # 레이블에 QPixmap 설정
-            self.create_image_widget.show()  # 레이블 표시
+            self.imageSlider.current_index = 0
+            self.imageSlider.images_slice()
+    
 
     # 서버에서 받은 EEG 그래프 표시 
     def eeg_graph(self, raw_eeg, info):
