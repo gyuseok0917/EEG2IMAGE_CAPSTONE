@@ -2,6 +2,7 @@ import pyqtgraph as pg
 from mne.io.fiff.raw import Raw
 from PyQt6.QtWidgets import *
 from PyQt6 import uic, QtGui, QtCore
+
 from gui_class import UploadWindow, EEGPlotter, topomap, UploadWindow_eeg
 
 class MainWindow(QMainWindow):
@@ -14,6 +15,7 @@ class MainWindow(QMainWindow):
         self.nextBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
         self.prevBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
     # UI 초기화 함수
+
     def initUI(self):
         self.uploadWindow = UploadWindow()  # 업로드 창 인스턴스 생성
         self.eeg_uploadWindow = UploadWindow_eeg()  # EEG 업로드 창 인스턴스 생성
@@ -22,9 +24,12 @@ class MainWindow(QMainWindow):
         self.origin_image_frame = self.findChild(QFrame, 'origin_image_frame')  # 원본 이미지를 표시할 프레임
         self.right_bottom_frame = self.findChild(QFrame, 'right_bottom_frame')  # Topomap을 표시할 프레임
         self.serverImageLabel = QLabel(self.findChild(QWidget, 'create_image_widget'))  # 서버에서 받은 이미지를 표시할 레이블
-        self.serverImageLabel.setGeometry(0, 0, self.serverImageLabel.parent().width(),
-                                          self.serverImageLabel.parent().height())  # 레이블 크기 설정
-        self.serverImageLabel.setScaledContents(True)  # 이미지 크기를 레이블에 맞추기
+        self.serverImageLabel.setGeometry(
+            0, 0, self.serverImageLabel.parent().width(),
+            self.serverImageLabel.parent().height())  # 레이블 크기 설정
+        
+        # 이미지 크기를 레이블에 맞추기
+        self.serverImageLabel.setScaledContents(True)  
         # 로딩 애니메이션 설정
         self.loading_movie = QtGui.QMovie("loading.gif")
         self.serverImageLabel.setMovie(self.loading_movie)
