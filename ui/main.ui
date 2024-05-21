@@ -249,7 +249,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="radioButton_8ch">
         <property name="text">
          <string>8CH</string>
         </property>
@@ -259,28 +259,28 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="radioButton_16ch">
         <property name="text">
          <string>16CH</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_3">
+       <widget class="QRadioButton" name="radioButton_32ch">
         <property name="text">
          <string>32CH</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_4">
+       <widget class="QRadioButton" name="radioButton_64ch">
         <property name="text">
          <string>64CH</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_5">
+       <widget class="QRadioButton" name="radioButton_128ch">
         <property name="text">
          <string>128CH</string>
         </property>

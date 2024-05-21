@@ -3,3 +3,8 @@
  다른 위치에 있으면 할 수 없음. 
 
 -> 지속적인 에러가 발생하면, ui 파일 들어가서 지정한 이름이 있는지 체크해보기 ..
+
+
+
+        # self.origin_image_frame = self.findChild(QFrame, 'origin_image_frame')  # 원본 이미지를 표시할 프레임
+        # self.right_bottom_frame = self.findChild(QFrame, 'right_bottom_frame')  # Topomap을 표시할 프레임

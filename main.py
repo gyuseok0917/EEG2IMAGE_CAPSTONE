@@ -1,8 +1,8 @@
 import pyqtgraph as pg
 from mne.io.fiff.raw import Raw
 from PyQt6.QtWidgets import *
-from PyQt6 import uic, QtGui, QtCore
-
+from PyQt6 import uic,  QtCore
+from PyQt6.QtGui import *
 from gui_class import UploadWindow, EEGPlotter, topomap, UploadWindow_eeg
 
 class MainWindow(QMainWindow):
@@ -21,18 +21,16 @@ class MainWindow(QMainWindow):
         self.eeg_uploadWindow = UploadWindow_eeg()  # EEG 업로드 창 인스턴스 생성
 
         # UI 요소들을 찾고 연결
-        self.origin_image_frame = self.findChild(QFrame, 'origin_image_frame')  # 원본 이미지를 표시할 프레임
-        self.right_bottom_frame = self.findChild(QFrame, 'right_bottom_frame')  # Topomap을 표시할 프레임
-        self.serverImageLabel = QLabel(self.findChild(QWidget, 'create_image_widget'))  # 서버에서 받은 이미지를 표시할 레이블
-        self.serverImageLabel.setGeometry(
-            0, 0, self.serverImageLabel.parent().width(),
-            self.serverImageLabel.parent().height())  # 레이블 크기 설정
+        self.create_image_widget = QLabel(self.findChild(QWidget, 'create_image_widget'))  # 서버에서 받은 이미지를 표시할 레이블
+        self.create_image_widget.setGeometry(
+            0, 0, self.create_image_widget.parent().width(),
+            self.create_image_widget.parent().height())  # 레이블 크기 설정
         
         # 이미지 크기를 레이블에 맞추기
-        self.serverImageLabel.setScaledContents(True)  
+        self.create_image_widget.setScaledContents(True)  
         # 로딩 애니메이션 설정
-        self.loading_movie = QtGui.QMovie("loading.gif")
-        self.serverImageLabel.setMovie(self.loading_movie)
+        self.loading_movie = QMovie("loading.gif")
+        self.create_image_widget.setMovie(self.loading_movie)
         # 버튼 클릭 시 연결될 함수 설정
         self.uploadButton.clicked.connect(self.showUploadWindow)
         self.EEG_upload.clicked.connect(self.showUploadWindow_eeg)
@@ -57,10 +55,10 @@ class MainWindow(QMainWindow):
     def displayServerImage(self, image_path):
         self.loading_movie.stop()  # 로딩 애니메이션 중지
         self.startButton.setEnabled(True)  # 버튼 활성화
-        pixmap = QtGui.QPixmap()  # QPixmap 객체 생성
+        pixmap = QPixmap()  # QPixmap 객체 생성
         pixmap.load(image_path)  # 이미지 파일 경로를 사용하여 QPixmap에 로드
-        self.serverImageLabel.setPixmap(pixmap)  # 레이블에 QPixmap 설정
-        self.serverImageLabel.show()  # 레이블 표시
+        self.create_image_widget.setPixmap(pixmap)  # 레이블에 QPixmap 설정
+        self.create_image_widget.show()  # 레이블 표시
 
     def show_next_image(self):
         if self.image_paths:
@@ -106,7 +104,7 @@ class MainWindow(QMainWindow):
     def displayImage(self):
         if self.uploadWindow.filePath:  # 파일 경로가 있는 경우
             label = QLabel(self.origin_image_frame)  # 레이블 생성
-            pixmap = QtGui.QPixmap(self.uploadWindow.filePath)  # QPixmap 객체 생성
+            pixmap = QPixmap(self.uploadWindow.filePath)  # QPixmap 객체 생성
             label.setPixmap(pixmap)  # 레이블에 QPixmap 객체 설정
             label.setGeometry(0, 0, self.origin_image_frame.width(), self.origin_image_frame.height())  # 레이블 크기 설정
             label.setScaledContents(True)  # 이미지 크기를 레이블에 맞추기
@@ -117,10 +115,10 @@ class MainWindow(QMainWindow):
         self.loading_movie.stop()  # 로딩 애니메이션 중지
         self.startButton.setEnabled(True)  # 버튼 활성화
 
-        pixmap = QtGui.QPixmap()  # QPixmap 객체 생성
+        pixmap = QPixmap()  # QPixmap 객체 생성
         pixmap.load(image_path)  # 이미지 파일 경로를 사용하여 QPixmap에 로드
-        self.serverImageLabel.setPixmap(pixmap)  # 레이블에 QPixmap 설정
-        self.serverImageLabel.show()  # 레이블 표시
+        self.create_image_widget.setPixmap(pixmap)  # 레이블에 QPixmap 설정
+        self.create_image_widget.show()  # 레이블 표시
 
     # EEG 그래프 표시 함수
     def eeg_graph(self, raw_eeg):
