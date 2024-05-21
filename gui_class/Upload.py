@@ -64,7 +64,6 @@ class UploadWindow_eeg(QDialog):
         json_data = json.dumps({'eeg_data': encoded_data, "shape": data.shape, "number": number})
         self.send_data(json_data)
 
-        self.eegDataReceived.emit(self.raw)
 
     def loadAndClose(self):
         if self.filePath:
