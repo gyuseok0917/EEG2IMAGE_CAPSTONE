@@ -4,6 +4,7 @@ import base64
 import zlib
 import json
 from mne.io.fiff.raw import Raw
+from mne import Info
 from PyQt6 import  uic, QtCore
 from PyQt6.QtCore import pyqtSignal, QUrl
 from PyQt6.QtWidgets import *
@@ -27,8 +28,8 @@ class UploadWindow(QDialog):  # 업로드 창
 
 
 class UploadWindow_eeg(QDialog):
-    eegDataLoaded = pyqtSignal(Raw)
-    imageDataReceived = pyqtSignal(list)  # list 타입으로 신호 정의
+    eegDataReceived = pyqtSignal(np.ndarray, Info)
+    imageDataReceived = pyqtSignal(list)  
 
     def __init__(self):
         super(UploadWindow_eeg, self).__init__()
@@ -63,7 +64,7 @@ class UploadWindow_eeg(QDialog):
         json_data = json.dumps({'eeg_data': encoded_data, "shape": data.shape, "number": number})
         self.send_data(json_data)
 
-        self.eegDataLoaded.emit(self.raw)
+        self.eegDataReceived.emit(self.raw)
 
     def loadAndClose(self):
         if self.filePath:
@@ -71,7 +72,7 @@ class UploadWindow_eeg(QDialog):
                 self.raw = mne.io.read_raw_fif(self.filePath, preload=True)
                 self.raw = self.raw.pick_types(eeg=True)
                 if isinstance(self.raw, Raw):
-                    print("데이터 로드 중, 데이터 유형 확인 중.")
+                    print("데이터 로드 중")
                 else:
                     print("로드된 데이터는 Raw 객체가 아닙니다. 데이터 형식:", type(self.raw))
             except Exception as e:
@@ -91,6 +92,7 @@ class UploadWindow_eeg(QDialog):
         reply = self.network_manager.post(request, json_data.encode('utf-8'))
         reply.finished.connect(self.handle_response)
 
+    # 서버 응답 처리 
     def handle_response(self):
         reply = self.sender()
         if reply.error() == QNetworkReply.NetworkError.NoError:
@@ -100,10 +102,9 @@ class UploadWindow_eeg(QDialog):
                 self.response_bytes = bytes(response_data)
                 
                 try:
-                    json_data = json.loads(self.response_bytes)
-                    
+                    # 서버에서 받은 이미지 데이터 
+                    json_data = json.loads(self.response_bytes)   
                     image_list = json_data.get('images', [])
-                    
                     self.image_paths = []
                     for index, image_base64 in enumerate(image_list):
                         
@@ -111,12 +112,23 @@ class UploadWindow_eeg(QDialog):
                         image_path = f"images/image_{index}.png"
                         
                         with open(image_path, 'wb') as image_file:
-                            image_file.write(image_bytes)
-                        
+                            image_file.write(image_bytes) 
                         self.image_paths.append(image_path)
-                    
-                    self.imageDataReceived.emit(self.image_paths)  # list 타입으로 emit
-                    
+
+                    # for문 종료되면 호출 메소드 emit 실행 
+                    self.imageDataReceived.emit(self.image_paths) 
+                
+
+                    # 서버에서 받은 eeg 데이터 
+                    encoded_data = json_data['eeg_data'] # Encoded eeg data
+                    data_shape = json_data["shape"]      # EEG data's shape
+                    compressed_data = base64.b64decode(encoded_data) # Decode base64 format
+                    data_bytes = zlib.decompress(compressed_data) # Restore compressed data
+                    print('frombuffer shape print : ',np.frombuffer(data_bytes, dtype=np.float64).shape)
+                    # Convert byte form to numpy matrix (reshape to size of original data)
+                    data_array = np.frombuffer(data_bytes, dtype=np.float64).reshape(data_shape)
+
+                    self.eegDataReceived.emit(data_array, self.raw.info)
                 except json.JSONDecodeError:
                     print("Failed to decode JSON data.")
             else:

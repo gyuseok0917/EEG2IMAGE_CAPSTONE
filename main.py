@@ -1,20 +1,17 @@
 import pyqtgraph as pg
+import numpy as np 
 from mne.io.fiff.raw import Raw
 from PyQt6.QtWidgets import *
-from PyQt6 import uic,  QtCore
+from PyQt6 import uic
 from PyQt6.QtGui import *
 from gui_class import UploadWindow, EEGPlotter, topomap, UploadWindow_eeg
 
 class MainWindow(QMainWindow):
-    imageDataReceived = QtCore.pyqtSignal(list)  # 클래스 정의 맨 위에 신호 정의
 
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('./ui/main.ui', self)  # UI 파일 로드
         self.initUI()  # UI 초기화 함수 호출
-        self.nextBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
-        self.prevBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
-    # UI 초기화 함수
 
     def initUI(self):
         self.uploadWindow = UploadWindow()  # 업로드 창 인스턴스 생성
@@ -31,44 +28,34 @@ class MainWindow(QMainWindow):
         # 로딩 애니메이션 설정
         self.loading_movie = QMovie("loading.gif")
         self.create_image_widget.setMovie(self.loading_movie)
+
         # 버튼 클릭 시 연결될 함수 설정
         self.uploadButton.clicked.connect(self.showUploadWindow)
         self.EEG_upload.clicked.connect(self.showUploadWindow_eeg)
+        self.startButton.clicked.connect(self.handle_start)        
 
-        self.eeg_uploadWindow.imageDataReceived.connect(self.update_image_paths)  # 이미지 데이터 수신 신호 연결
-        self.startButton.clicked.connect(self.handle_start)
+        # imageDataReceived 호출 
+        self.eeg_uploadWindow.imageDataReceived.connect(self.displayimage_server)
+        # eegDataReceived 호출 
+        self.eeg_uploadWindow.eegDataReceived.connect(self.eeg_graph)
 
         self.image_paths = []
-        self.current_index = 0
-        # 생성 이미지 이전 버튼     
+        self.current_index = 0   
+        # 생성 이미지 이전 / 다음 버튼 
         self.prevBtn.clicked.connect(self.show_prev_image)    
-        # 생성 이미지 다음 버튼 
         self.nextBtn.clicked.connect(self.show_next_image) 
-        # 이미지 수신 신호 연결
-        self.imageDataReceived.connect(self.update_image_paths)
-
-    def update_image_paths(self, paths):
-        self.image_paths = paths
-        if self.image_paths:
-            self.displayServerImage(self.image_paths[0])
-
-    def displayServerImage(self, image_path):
-        self.loading_movie.stop()  # 로딩 애니메이션 중지
-        self.startButton.setEnabled(True)  # 버튼 활성화
-        pixmap = QPixmap()  # QPixmap 객체 생성
-        pixmap.load(image_path)  # 이미지 파일 경로를 사용하여 QPixmap에 로드
-        self.create_image_widget.setPixmap(pixmap)  # 레이블에 QPixmap 설정
-        self.create_image_widget.show()  # 레이블 표시
+        self.nextBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
+        self.prevBtn.setStyleSheet("QPushButton { opacity: 0.2; }")
 
     def show_next_image(self):
         if self.image_paths:
             self.current_index = (self.current_index + 1) % len(self.image_paths)
-            self.displayServerImage(self.image_paths[self.current_index])
+            self.displayimage_server(self.image_paths[self.current_index])
 
     def show_prev_image(self):
         if self.image_paths:
             self.current_index = (self.current_index - 1) % len(self.image_paths)
-            self.displayServerImage(self.image_paths[self.current_index])
+            self.displayimage_server(self.image_paths[self.current_index])
 
     def enterEvent(self, event):
         self.prevBtn.setStyleSheet("QPushButton { opacity: 1.0; }")
@@ -82,26 +69,25 @@ class MainWindow(QMainWindow):
 
     # 시작 버튼 클릭 시 실행될 함수
     def handle_start(self):
-        self.startButton.setEnabled(False)  # 버튼 비활성화
-        number = self.ImageNumber.value()  # UI에서 설정한 이미지 번호 가져오기
+        self.startButton.setEnabled(False)  # 시작버튼 비활성화
+        number = self.ImageNumber.value()  # 생성할 이미지 개수 정보 가져오기
         self.eeg_uploadWindow.generation_visualization(number)  # 시각화 생성 함수 호출
         self.loading_movie.start()  # 로딩 애니메이션 시작
 
     # 이미지 업로드 창 표시 함수
     def showUploadWindow(self):
-        self.uploadWindow.btn_UP_open.clicked.connect(self.displayImage)  # 업로드 버튼 클릭 시 displayImage 함수 연결
+        self.uploadWindow.btn_UP_open.clicked.connect(self.displayImage_origin)  # 업로드 버튼 클릭 시 displayImage 함수 연결
         self.uploadWindow.show()  # 업로드 창 표시
 
     # EEG 업로드 창 표시 함수
     def showUploadWindow_eeg(self):
         # 기존에 연결된 모든 신호를 제거하고 새로 연결 (중복 연결 방지)
-        self.eeg_uploadWindow.EEG_upload_btn.clicked.disconnect()
+        # self.eeg_uploadWindow.EEG_upload_btn.clicked.disconnect()
         self.eeg_uploadWindow.EEG_upload_btn.clicked.connect(self.eeg_uploadWindow.openFileDialog)
-        self.eeg_uploadWindow.eegDataLoaded.connect(self.eeg_graph)
-        self.eeg_uploadWindow.show()  # EEG 업로드 창 표시
+        self.eeg_uploadWindow.show()  
 
     # 업로드된 이미지 표시 함수
-    def displayImage(self):
+    def displayImage_origin(self):
         if self.uploadWindow.filePath:  # 파일 경로가 있는 경우
             label = QLabel(self.origin_image_frame)  # 레이블 생성
             pixmap = QPixmap(self.uploadWindow.filePath)  # QPixmap 객체 생성
@@ -110,24 +96,25 @@ class MainWindow(QMainWindow):
             label.setScaledContents(True)  # 이미지 크기를 레이블에 맞추기
             label.show()  # 레이블 표시
 
-    # 서버에서 받은 이미지 표시 함수
-    def displayServerImage(self, image_path):
-        self.loading_movie.stop()  # 로딩 애니메이션 중지
-        self.startButton.setEnabled(True)  # 버튼 활성화
+    # 서버에서 받은 이미지 표시 
+    def displayimage_server(self, paths):
+        self.image_paths = paths
+        if self.image_paths:
+            self.loading_movie.stop()  # 로딩 애니메이션 중지
+            self.startButton.setEnabled(True)  # 버튼 활성화
+            pixmap = QPixmap()  # QPixmap 객체 생성
+            pixmap.load(self.image_paths[0])  # 이미지 파일 경로를 사용하여 QPixmap에 로드
+            self.create_image_widget.setPixmap(pixmap)  # 레이블에 QPixmap 설정
+            self.create_image_widget.show()  # 레이블 표시
 
-        pixmap = QPixmap()  # QPixmap 객체 생성
-        pixmap.load(image_path)  # 이미지 파일 경로를 사용하여 QPixmap에 로드
-        self.create_image_widget.setPixmap(pixmap)  # 레이블에 QPixmap 설정
-        self.create_image_widget.show()  # 레이블 표시
-
-    # EEG 그래프 표시 함수
-    def eeg_graph(self, raw_eeg):
-        if isinstance(raw_eeg, Raw):  # 전달된 데이터가 Raw 객체인 경우
+    # 서버에서 받은 EEG 그래프 표시 
+    def eeg_graph(self, raw_eeg, info):
+        if isinstance(raw_eeg, np.ndarray):  # 전달된 데이터가 numpy 배열인 경우
             eeg_widget = self.findChild(pg.PlotWidget, "graph")  # 그래프를 표시할 위젯 찾기
-            self.plotter = EEGPlotter(eeg_widget, raw_eeg)  # EEGPlotter 객체 생성
+            self.plotter = EEGPlotter(eeg_widget, raw_eeg, info)  # EEGPlotter 객체 생성
             self.plotter.regionChanged.connect(self.topo_show)  # 영역 변경 신호에 topo_show 함수 연결
         else:
-            print("Main.py Alert : eeg_graph에 전달된 데이터는 Raw 객체가 아닙니다. 수신된 데이터 유형:", type(raw_eeg))
+            print("Main.py Alert : eeg_graph에 전달된 데이터는 numpy 배열이 아닙니다. 수신된 데이터 유형:", type(raw_eeg))
 
     # Topomap 표시 함수
     def topo_show(self, tmin, tmax):
