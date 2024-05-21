@@ -15,8 +15,6 @@ class UploadWindow(QDialog):  # 업로드 창
         uic.loadUi('./ui/uploadWindow.ui', self)
         self.lineEdit = self.findChild(QLineEdit, 'lineEdit')
         self.lineEdit.mousePressEvent = self.openFileDialog
-        self.btn_UP_open = self.findChild(QPushButton, 'btn_UP_open')  # 버튼 요소 찾기 
-        
         self.filePath = ""  # 파일 경로를 저장할 변수 추가
         self.btn_UP_open.clicked.connect(self.close)
     
@@ -103,7 +101,6 @@ class UploadWindow_eeg(QDialog):
                 
                 try:
                     json_data = json.loads(self.response_bytes)
-                    # print("JSON Data:", json_data)  # JSON 데이터 출력하여 구조 확인
                     
                     image_list = json_data.get('images', [])
                     
@@ -111,7 +108,7 @@ class UploadWindow_eeg(QDialog):
                     for index, image_base64 in enumerate(image_list):
                         
                         image_bytes = base64.b64decode(image_base64)
-                        image_path = f"image_{index}.png"
+                        image_path = f"images/image_{index}.png"
                         
                         with open(image_path, 'wb') as image_file:
                             image_file.write(image_bytes)
