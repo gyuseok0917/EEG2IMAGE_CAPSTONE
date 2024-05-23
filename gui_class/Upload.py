@@ -1,71 +1,68 @@
 import mne
-import numpy as np 
+import numpy as np
 import base64
 import zlib
 import json
+import pickle
 from mne.io.fiff.raw import Raw
 from mne import Info
-from PyQt6 import  uic, QtCore
+from PyQt6 import uic, QtCore
 from PyQt6.QtCore import pyqtSignal, QUrl
 from PyQt6.QtWidgets import *
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 
-class UploadWindow(QDialog):  # 업로드 창
+
+class UPLOADWINDOW_IMG(QDialog):  # 업로드 창
     def __init__(self):
-        super(UploadWindow, self).__init__()
+        super(UPLOADWINDOW_IMG, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
         self.lineEdit = self.findChild(QLineEdit, 'lineEdit')
-        self.lineEdit.mousePressEvent = self.openFileDialog
+        self.lineEdit.mousePressEvent = self.OPEN_IMAGE_FILE_DIALOG
         self.filePath = ""  # 파일 경로를 저장할 변수 추가
         self.btn_UP_open.clicked.connect(self.close)
-    
-    def openFileDialog(self, event):
-        filters = "Image files (*.png *.jpg *.jpeg *.bmp);"
-        fname, _ = QFileDialog.getOpenFileName(self, 'Image file Open', QtCore.QDir.homePath(), filters)
-        if fname:
-            self.lineEdit.setText(fname)
-            self.filePath = fname  # 파일 경로 저장
+
+    def OPEN_IMAGE_FILE_DIALOG(self, event):
+        OPEN_FILE_DIALOG(self, 'Image file Open', 'Image files (*.png *.jpg *.jpeg *.bmp);', self.lineEdit)
 
 
-class UploadWindow_eeg(QDialog):
-    eegDataReceived = pyqtSignal(np.ndarray, Info)
-    imageDataReceived = pyqtSignal(list)  
+class UPLOADWINDOW_EEG(QDialog):
+    eegDataReceived = pyqtSignal(Raw)
+    selectDataReceived = pyqtSignal(Raw)
+    imageDataReceived = pyqtSignal(list)
 
     def __init__(self):
-        super(UploadWindow_eeg, self).__init__()
+        super(UPLOADWINDOW_EEG, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
 
         self.filePath = ""
         self.raw = None
         self.response_bytes = None
-
+        self.new_raw = None
         self.lineEdit = self.findChild(QLineEdit, 'lineEdit')
-        self.lineEdit.mousePressEvent = self.openFileDialog
+        self.lineEdit.mousePressEvent = self.OPEN_EEG_FILE_DIALOG
         self.EEG_upload_btn = self.findChild(QPushButton, 'btn_UP_open')
-        self.EEG_upload_btn.clicked.connect(self.loadAndClose)
+        self.EEG_upload_btn.clicked.connect(self.EEG_DATALOAD)
         self.network_manager = QNetworkAccessManager(self)
 
-    def openFileDialog(self, event):
-        filters = "EEG file (*.fif);"
-        fname, _ = QFileDialog.getOpenFileName(self, 'EEG file Open', QtCore.QDir.homePath(), filters)
+    def OPEN_EEG_FILE_DIALOG(self, event):
+        OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG file (*.fif);', self.lineEdit, self.EEG_DATALOAD)
 
-        if fname:
-            self.lineEdit.setText(fname)
-            self.filePath = fname
-            self.loadAndClose()
+    def IMAGE_GENERATION_VISUALIZATION(self, number):
+        # EEG DATA + NUMBER ==> SERVER transfer
 
-    def generation_visualization(self, number):
         print("Image Number :", number)
-        data = self.raw.get_data()  
-        data_bytes = data.tobytes()
-        compressed_data = zlib.compress(data_bytes)
-        encoded_data = base64.b64encode(compressed_data).decode('utf-8')
-                
-        json_data = json.dumps({'eeg_data': encoded_data, "shape": data.shape, "number": number})
-        self.send_data(json_data)
+        raw_bytes = pickle.dumps(self.raw)
+        raw_base64 = base64.b64encode(raw_bytes).decode('utf-8')
+        json_data = json.dumps({'eeg_data': raw_base64, "number": number})
+        self.SEND_DATA(json_data)
 
+    def SELECT_CHANNEL(self, n_ch):
+        n_ch = int(n_ch.text()[:-2])
+        eeg_channels = self.new_raw.info['ch_names'][:n_ch]
+        picked_data = self.new_raw.copy().pick_channels(eeg_channels)
+        self.selectDataReceived.emit(picked_data)
 
-    def loadAndClose(self):
+    def EEG_DATALOAD(self):
         if self.filePath:
             try:
                 self.raw = mne.io.read_raw_fif(self.filePath, preload=True)
@@ -79,56 +76,61 @@ class UploadWindow_eeg(QDialog):
             finally:
                 self.close()
 
-
-    # EEG DATA 서버 전송 
-    def send_data(self, json_data):
+    # EEG DATA 서버 전송
+    def SEND_DATA(self, json_data):
         # 서버 URL 설정
         url = QUrl('http://210.119.103.61:5000/transfer')
         request = QNetworkRequest(url)
         request.setHeader(QNetworkRequest.KnownHeaders.ContentTypeHeader, 'application/json')
-        
+
         # 데이터 전송
         reply = self.network_manager.post(request, json_data.encode('utf-8'))
-        reply.finished.connect(self.handle_response)
+        reply.finished.connect(self.HANDLE_RESPON)
 
     # 서버 응답 처리 
-    def handle_response(self):
+    def HANDLE_RESPON(self):
         reply = self.sender()
         if reply.error() == QNetworkReply.NetworkError.NoError:
             response_data = reply.readAll()
-            
+
             if response_data:
                 self.response_bytes = bytes(response_data)
-                
+
                 try:
                     # 서버에서 받은 이미지 데이터 
-                    json_data = json.loads(self.response_bytes)   
+                    json_data = json.loads(self.response_bytes)
                     image_list = json_data.get('images', [])
                     self.image_paths = []
                     for index, image_base64 in enumerate(image_list):
-                        
                         image_bytes = base64.b64decode(image_base64)
                         image_path = f"images/image_{index}.png"
-                        
+
                         with open(image_path, 'wb') as image_file:
-                            image_file.write(image_bytes) 
+                            image_file.write(image_bytes)
                             self.image_paths.append(image_path)
 
                     # for문 종료되면 호출 메소드 emit 실행 
-                    self.imageDataReceived.emit(self.image_paths) 
-                
+                    self.imageDataReceived.emit(self.image_paths)
 
                     # 서버에서 받은 eeg 데이터 
-                    encoded_data = json_data['eeg_data'] 
-                    data_shape = json_data["shape"]      
-                    compressed_data = base64.b64decode(encoded_data)
-                    data_bytes = zlib.decompress(compressed_data) 
-                    data_array = np.frombuffer(data_bytes, dtype=np.float64).reshape(data_shape)
+                    encoded_data = json_data['eeg_data']
 
-                    self.eegDataReceived.emit(data_array, self.raw.info)
+                    raw_bytes = base64.b64decode(encoded_data)
+                    self.new_raw = pickle.loads(raw_bytes)
+                    # 호출요청 (emit)
+                    self.eegDataReceived.emit(self.new_raw)
                 except json.JSONDecodeError:
                     print("Failed to decode JSON data.")
             else:
                 print("Received empty data from server.")
         else:
             print("Network error occurred:", reply.errorString())
+
+
+def OPEN_FILE_DIALOG(parent, dialog_title, filters, line_edit, callback=None):
+    fname, _ = QFileDialog.getOpenFileName(parent, dialog_title, QtCore.QDir.homePath(), filters)
+    if fname:
+        line_edit.setText(fname)
+        parent.filePath = fname
+        if callback:
+            callback()
