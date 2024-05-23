@@ -47,7 +47,7 @@ class UPLOADWINDOW_EEG(QDialog):
     def OPEN_EEG_FILE_DIALOG(self, event):
         OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG file (*.fif);', self.lineEdit, self.EEG_DATALOAD)
 
-    def IMAGE_GENERATION_VISUALIZATION(self, number):
+    def EEG_TO_IMAGE_GENERATION(self, number):
         # EEG DATA + NUMBER ==> SERVER transfer
 
         print("Image Number :", number)

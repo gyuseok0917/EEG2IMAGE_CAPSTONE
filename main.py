@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
     def HANDLE_START(self):
         self.startButton.setEnabled(False)  # 시작버튼 비활성화
         number = self.ImageNumber.value()  # 생성할 이미지 개수 정보 가져오기
-        self.eeg_uploadWindow.IMAGE_GENERATION_VISUALIZATION(number)  # 시각화 생성 함수 호출
+        self.eeg_uploadWindow.EEG_TO_IMAGE_GENERATION(number)  # 시각화 생성 함수 호출
         self.loading_movie.start()  # 로딩 애니메이션 시작
 
     # 업로드된 이미지 표시
