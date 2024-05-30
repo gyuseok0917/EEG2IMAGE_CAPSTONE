@@ -491,7 +491,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="OPEN"/>
+    <addaction name="New_open"/>
    </widget>
    <widget class="QMenu" name="menuOption">
     <property name="title">
@@ -530,9 +530,9 @@
     <string>Open</string>
    </property>
   </action>
-  <action name="OPEN">
+  <action name="New_open">
    <property name="text">
-    <string>OPEN</string>
+    <string>New Open</string>
    </property>
   </action>
  </widget>

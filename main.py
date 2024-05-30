@@ -1,4 +1,6 @@
 import time
+import sys
+import os
 import pyqtgraph as pg
 import numpy as np
 
@@ -7,6 +9,12 @@ from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtGui import *
 from gui_class import UPLOADWINDOW_IMG, EEGPlotter, TOPOMAP, UPLOADWINDOW_EEG, ImageSlider
+
+
+# File Menu -> New Open 클릭 시 
+def Restart_program():
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 
 
 class MainWindow(QMainWindow):
@@ -63,7 +71,7 @@ class MainWindow(QMainWindow):
         # 시그널과 슬롯 연결
         self.eeg_uploadWindow.file_selected.connect(self.on_eeg_file_selected)
         self.uploadWindow.file_selected.connect(self.on_img_file_selected)
-
+        self.New_open.triggered.connect(Restart_program)
 
     def EEG_Header_widget(self):
         # Header_table 위젯에 대한 참조 생성
@@ -134,12 +142,17 @@ class MainWindow(QMainWindow):
         self.imageSlider.image_paths = paths
         if self.imageSlider.image_paths:
             self.loading_movie.stop()  # 로딩 애니메이션 중지
-            self.startButton.setEnabled(True)  # 버튼 활성화
             self.imageSlider.current_index = 0
             self.imageSlider.images_slice()
 
+            # 버튼 활성화
+            self.startButton.setEnabled(False)
+            self.EEG_upload.setEnabled(False)
+            self.uploadButton.setEnabled(False)
         # score frame 활성화
+        # 서버에서 받은 이미지와 비교해야하므로 이 곳에 위치
         self.evaluation_score_frame()
+
 
     def evaluation_score_frame(self):
         # evaluation score 함수
