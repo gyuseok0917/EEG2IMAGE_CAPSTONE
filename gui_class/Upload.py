@@ -1,4 +1,5 @@
 import mne
+import os
 import numpy as np
 import base64
 import zlib
@@ -39,7 +40,6 @@ class UPLOADWINDOW_EEG(QDialog):
         super(UPLOADWINDOW_EEG, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
 
-        self.enabled = False  # EEG 파일 선택 가능 여부
         self.filePath = ""
         self.raw = None
         self.response_bytes = None
@@ -52,9 +52,6 @@ class UPLOADWINDOW_EEG(QDialog):
 
 
     def OPEN_EEG_FILE_DIALOG(self, event):
-        if not self.enabled:
-            print("먼저 이미지 파일을 선택하세요.")
-            return
         OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG file (*.fif);', self.lineEdit, self.EEG_DATALOAD)
         self.file_selected.emit()  # 시그널 발행
 
@@ -139,7 +136,8 @@ class UPLOADWINDOW_EEG(QDialog):
 
 
 def OPEN_FILE_DIALOG(parent, dialog_title, filters, line_edit, callback=None):
-    fname, _ = QFileDialog.getOpenFileName(parent, dialog_title, QtCore.QDir.homePath(), filters)
+    current_directory = os.getcwd()  # 현재 작업 디렉토리 가져오기
+    fname, _ = QFileDialog.getOpenFileName(parent, dialog_title, current_directory, filters)
     if fname:
         line_edit.setText(fname)
         parent.filePath = fname

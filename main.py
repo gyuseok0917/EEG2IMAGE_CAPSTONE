@@ -59,31 +59,21 @@ class MainWindow(QMainWindow):
         # 라디오 버튼 클릭시 graph 위젯 초기화
         self.Radio_btn.buttonClicked.connect(self.EEG_WIDGET_CLEAR)
 
-        self.img_selected = False
 
+        self.startButton.setEnabled(False)  # 시작버튼 비활성화
+        self.EEG_upload.setEnabled(False) # EEG Upload 버튼 비활성화
         # 시그널과 슬롯 연결
         self.eeg_uploadWindow.file_selected.connect(self.on_eeg_file_selected)
         self.uploadWindow.file_selected.connect(self.on_img_file_selected)
 
 
-    def on_img_file_selected(self):
-        self.img_selected = True
-        self.eeg_uploadWindow.enabled = True
+    def on_img_file_selected(self): # 이미지 파일 업로드 완료시 EEG 업로드 버튼 활성화
+        self.EEG_upload.setEnabled(True)
         print("이미지 파일이 선택되었습니다. 이제 EEG 파일을 선택할 수 있습니다.")
 
+    def on_eeg_file_selected(self): # EEG 파일 업로드 완료시 START 버튼 활성화
+        self.startButton.setEnabled(True)  # 시작버튼 활성화
 
-    def on_eeg_file_selected(self):
-        if self.img_selected:
-            self.STARTBUTTON()
-        else:
-            print("먼저 이미지 파일을 선택하세요.")
-
-
-    def STARTBUTTON(self):
-        # STARTBUTTON 로직
-        print("STARTBUTTON 함수가 실행되었습니다.")
-
-        # ... additional logic ...
     def EEG_WIDGET_CLEAR(self, button):
         # 버튼 클릭시 eeg_graph WIDGET 초기화
         self.eeg_widget.clear()
