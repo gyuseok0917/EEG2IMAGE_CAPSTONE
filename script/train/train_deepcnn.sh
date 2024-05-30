@@ -1,0 +1,2 @@
+#!/bin/bash
+python train_deepcnn.py --GPU="multi" --config_path="cfg/deepcnn.yml" --wandb_path="cfg/deepcnn_wandb.yml" --data_path="data/eegmmidb/preprocessing/noiseless_std.pth" --runs_dir="runs/deepcnn/eegmmidb/multiquadric/noiseless_std_2" --interval=2560 --epochs=200 --batch_size=32 --learning_rate=5e-05 --weight_decay=1e-05

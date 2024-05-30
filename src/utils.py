@@ -1,41 +1,46 @@
-import numpy as np
-
-def add_white_gaussian_noise(eeg_signal, snr_ratio):
-    """
-    White Gaussian Noise Add Function
-    
-    Args:
-        eeg_signal (np.ndarray): EEG data (CxT) # C: electrode T: Measurement time
-        snr_ratio (float): Signal-to-Noise Ratio
-    Return (np.ndarray):
-        EEG data with added noise
-    """
-    eeg_power = np.mean(np.square(eeg_signal))
-    
-    noise_power = eeg_power / (10 ** (snr_ratio / 10))
-    WGN = np.random.normal(scale = np.sqrt(noise_power), size = eeg_signal.shape)
-    noisy_eeg_signal = eeg_signal + WGN
-    return noisy_eeg_signal
+import os
+import json
+import pickle
+import oyaml as yaml
+import pandas as pd
 
 
-def add_real_noise(eeg_signal, real_noise_data, snr_ratio):
-    """
-    Real Noise Add Function
+def exist_path(path):
+    return os.path.exists(path)
+
+
+def read_config(path):
+    formats = path.split('.')[-1]
     
-    Args:
-        eeg_signal (np.ndarray): EEG data (CxT) # C: electrode T: Measurement time
-        real_noise_data (np.ndarray): A matrix of the same size as "eeg_signal" of real noise.
-        snr_ratio (float): Signal-to-Noise Ratio
-    Return (np.ndarray):
-        EEG data with added noise
-    """
-    eeg_power = np.mean(np.square(eeg_signal))
-    noise_power = np.mean(np.square(real_noise_data))
+    if formats == "json":
+        with open(path, "r") as F:
+            config = json.load(F)
+    elif formats == "pkl":
+        with open(path, "rb") as F:
+            config = pickle.load(F)
+    elif formats == "yml":
+        with open(path) as F:
+            config = yaml.load(F, Loader = yaml.FullLoader)
+    return config
+
+
+def save_log(logs: dict, save_path):
     
-    target_noise_power = eeg_power / (10 ** (snr_ratio / 10))
-    scale_factor = np.sqrt(target_noise_power / noise_power)
-    scaled_noise_data = real_noise_data * scale_factor
+    log_df = pd.DataFrame(logs)
     
-    noisy_eeg_signal = eeg_signal + scaled_noise_data
-    
-    return noisy_eeg_signal
+    if exist_path(save_path):
+        log_df.to_csv(save_path, mode = "a", header = False, index = False)
+    else:
+        log_df.to_csv(save_path, index = False)
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

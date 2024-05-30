@@ -1,0 +1,1 @@
+from src.model.deepcnn.model import DeepCNN

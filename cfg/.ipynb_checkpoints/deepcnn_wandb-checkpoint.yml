@@ -1,0 +1,14 @@
+entity: gyuseok_project
+project: eeg_sr_mmidb
+name: noiseless_std_interp_multiquadric_batch_32_lr_5e-05_weight_decay_1e-05_adamw
+config:
+  Epochs: 200
+  BATCH_SIZE: 32
+  Loss: MSE
+  metric:
+  - Pearson Correlation Coefficient
+  - Signal to Noise Ratio
+  Optimizer: Adam
+  Learning Rate: 0.00005
+  Architecture: DeepCNN
+  Dataset: EEG Motor Movement/Imagery Dataset

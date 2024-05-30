@@ -1,0 +1,6 @@
+Interpolate,Noise ratio,MSE,SNR,PCC,Mask
+Multiquadric,Noiseless,0.33646,4.739,0.815,N
+Multiquadric,10,0.36495,4.385,0.797,N
+Multiquadric,1,0.40767,3.902,0.77,N
+Multiquadric,0.1,0.4145,3.83,0.765,N
+Multiquadric,Noiseless,0.33323,4.781,0.817,Y

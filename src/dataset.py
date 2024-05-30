@@ -26,8 +26,8 @@ class EEG_Dataset(Dataset):
     """
     def __init__(self, eeg_dict: Dict, mode = "train"):
         
-        lr_data = torch.cat(eeg_dict["LR"][mode], axis = 0)
-        hr_data = torch.cat(eeg_dict["HR"][mode], axis = 0)
+        self.lr_data = torch.cat(eeg_dict["LR"][mode], axis = 0).permute(0, 1, 3, 2)
+        self.hr_data = torch.cat(eeg_dict["HR"][mode], axis = 0).permute(0, 1, 3, 2)
             
     
     def __len__(self):
@@ -49,7 +49,7 @@ class GetLoader:
     def __init__(
         self,
         data_path,
-        dataset_mode,
+        dataset_mode: str or List[str],
         batch_size,
         shuffle = False,
         pin_memory = False,
@@ -94,3 +94,5 @@ class GetLoader:
             return loader_list
         else:
             return self.create_loader(self.mode)
+        
+

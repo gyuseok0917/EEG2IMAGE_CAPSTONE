@@ -1,0 +1,58 @@
+encoder:
+  0:
+    features:
+    - 1
+    - 64
+    kernel_size:
+    - 13
+    - 5
+    stride: 2
+    padding:
+    - 6
+    - 2
+  1:
+    features:
+    - 64
+    - 64
+    kernel_size:
+    - 13
+    - 5
+    stride: 2
+    padding:
+    - 6
+    - 2
+decoder:
+  features:
+  - 64
+  - 64
+  kernel_size:
+  - 13
+  - 9
+  stride: 2
+  padding:
+  - 6
+  - 4
+  output_padding: 1
+output:
+  0:
+    features:
+    - 64
+    - 64
+    kernel_size:
+    - 13
+    - 5
+    stride: 1
+    padding:
+    - 6
+    - 2
+  1:
+    features:
+    - 64
+    - 1
+    kernel_size:
+    - 7
+    - 1
+    stride: 1
+    padding:
+    - 3
+    - 0

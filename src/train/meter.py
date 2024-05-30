@@ -50,12 +50,14 @@ class LossMeter(Meter):
         self.l_fn = loss_fn
         
     
-    def calculate(self, preds, targets):
+    def calculate(self, preds, targets, mode = None):
         """
         Method to calculate loss value
         """
         loss = self.l_fn(preds, targets)
-        loss.backward()
+        
+        if mode == "train":
+            loss.backward()
         
         # Reflected in Meter's update method
         super().update(val = loss)
@@ -65,7 +67,7 @@ class LossMeter(Meter):
         if self.count == 0:
             return super().value()
         
-        return self.total.item() / self.count
+        return self.total.cpu().item() / self.count
     
 
 class MetricMeter(Meter):
@@ -95,7 +97,7 @@ class MetricMeter(Meter):
         if self.count == 0:
             return super().value()
         
-        return self.total / self.count
+        return self.total.cpu() / self.count
 
 
 

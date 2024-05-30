@@ -1,8 +1,13 @@
 import os
+import sys
+import io
+import wandb
 import logging
+import numpy as np
+import pandas as pd
+import torch
 
 from typing import List
-from torch.utils.tensorboard import SummaryWriter
 
 
 def make_dirs(dirs):
@@ -10,13 +15,12 @@ def make_dirs(dirs):
     Funtion to create folders.
     
     Args:
-        dirs (str or List[str])
+        dirs (str)
     """
     
     # Run only when there is no folder to create
-    for dir_root in dirs:
-        if os.path.isdir(dir_root) == False:
-            os.makedirs(dir_root)
+    if os.path.isdir(dirs) == False:
+        os.makedirs(dirs)
             
             
 def set_logging(save_path = None):
@@ -40,7 +44,9 @@ def set_logging(save_path = None):
         )
     else:
         logging.basicConfig(
-            filename = save_path
+            filename = save_path,
+            level = logging.INFO,
+            format = '%(message)s'
         )
     
     # Setting the function to output logs to the screen
@@ -49,29 +55,37 @@ def set_logging(save_path = None):
     logging.getLogger().addHandler(console_handler)
     
     return logging
-
-
-class TensorBoardSummary:
-    """
-    Functions to use Tensorboard usefully
-    """   
-    def __init__(self, log_dir):
-        
-        # tensorboard writer object
-        self.writer = SummaryWriter(log_dir = log_dir)
-        
-        
-    def __call__(self, info_dict):
-        step = info_dict["step"]
-        
-        for log_name, log_value in info_dict.items()[:-1]:
-            if log_name == "step":
-                pass
-            else:
-                self.writer.add_scalar(log_name, log_value, step)
                 
                 
+class WandbLog:
+    def __init__(self, init_params):
+        
+        wandb.init(
+            **init_params
+        )
+        
+        
+    def update(self, log_params, step):
+        wandb.log(log_params, step = step)
+        
+        
+    def finish(self):
+        wandb.finish()
+                
+
 class EarlyStoping:
+    """
+    Early stops the training if validation loss doesn't improve after a given patience.
+
+    Args:
+        path (str): Path for the checkpoint to be saved to.
+        patience (int): How long to wait after last time validation loss improved.
+                        Default: 8
+        verbose (bool): If True, prints a message gor each validation loss improvement.
+                        Default: False
+        delta (float): Minimum change in the monitored quantity to qualify as an improvement.
+                        Default: 0.
+    """
     def __init__(
         self,
         path,
@@ -80,18 +94,6 @@ class EarlyStoping:
         verbose: bool = False,
         delta: float = 0.
     ):
-        """
-        Early stops the training if validation loss doesn't improve after a given patience.
-        
-        Args:
-            path (str): Path for the checkpoint to be saved to.
-            patience (int): How long to wait after last time validation loss improved.
-                            Default: 8
-            verbose (bool): If True, prints a message gor each validation loss improvement.
-                            Default: False
-            delta (float): Minimum change in the monitored quantity to qualify as an improvement.
-                            Default: 0.
-        """
         self.path = path
         self.patience = patience
         self.logging = logging

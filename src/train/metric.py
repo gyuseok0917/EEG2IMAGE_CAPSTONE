@@ -6,28 +6,27 @@ def signal_to_noise_ratio(sr_eeg, hr_eeg):
     Function to calculate the SNR (Signal-to-Noise Ratio)
     
     Args:
-        sr_eeg: SR (Super Resolution) EEG
-        hr_eeg: HR (High Resolution) EEG
+        sr_eeg: SR (Super Resolution) EEG [BxCxTxE]
+        hr_eeg: HR (High Resolution) EEG  [BxCxTxE]
     """
     
-    # SR EEG signal power
-    signal_power = sr_eeg.pow(2).sum()
+    eps = torch.finfo(sr_eeg.dtype).eps
     
-    # Noise Power => (SR - HR)^2's SUM
-    noise_power = (sr_eeg - hr_eeg).pow(2).sum()
+    signal_power = hr_eeg.pow(2).sum()
+    noise_power = (hr_eeg - sr_eeg).pow(2).sum()
     
-    # SNR Score
-    snr = 10 * torch.log10(signal_power / noise_power)
+    snr_value = (signal_power + eps) / (noise_power + eps)
     
-    return snr
+    return 10 * torch.log10(snr_value) 
+    
 
 def pearson_correlation_coefficient(sr_eeg, hr_eeg):
     """
     Function to calculate the PCC (Pearson Correlation Coefficient)
     
     Args:
-        sr_eeg: SR (Super Resolution) EEG
-        hr_eeg: HR (High Resolution) EEG
+        sr_eeg: SR (Super Resolution) EEG [BxCxTxE]
+        hr_eeg: HR (High Resolution) EEG  [BxCxTxE]
     """
     
     # Calculate Deviation
