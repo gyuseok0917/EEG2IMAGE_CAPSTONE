@@ -36,11 +36,6 @@ class MainWindow(QMainWindow):
         self.EEG_upload.clicked.connect(self.SHOW_UPLOAD_WINDOW_EEG)
         self.startButton.clicked.connect(self.HANDLE_START)
 
-        # imageDataReceived 호출
-        self.eeg_uploadWindow.imageDataReceived.connect(self.DISPLAY_IMAGE_SERVER_CREATE)
-        # eegDataReceived 호출
-        self.eeg_uploadWindow.eegDataReceived.connect(self.EEG_GRAPH)
-
         # 이미지 슬라이더 생성
         self.imageSlider = ImageSlider(self.create_image_widget, self.prevBtn, self.nextBtn)
 
@@ -54,11 +49,41 @@ class MainWindow(QMainWindow):
         self.Radio_btn.addButton(self.radioButton_32ch, 32)
         self.Radio_btn.addButton(self.radioButton_64ch, 64)
         self.Radio_btn.addButton(self.radioButton_128ch, 128)
-        # 버튼 클릭 시그널에 슬롯 연결
+
+        # imageDataReceived 호출
+        self.eeg_uploadWindow.imageDataReceived.connect(self.DISPLAY_IMAGE_SERVER_CREATE)
+        # eegDataReceived 호출
+        self.eeg_uploadWindow.eegDataReceived.connect(self.EEG_GRAPH)
+        # 채널 변경 호출
+        self.eeg_uploadWindow.selectChannelReceived.connect(self.EEG_GRAPH)
+        # 라디오 버튼 클릭시 graph 위젯 초기화
         self.Radio_btn.buttonClicked.connect(self.EEG_WIDGET_CLEAR)
 
-        self.eeg_uploadWindow.selectDataReceived.connect(self.EEG_GRAPH)
+        self.img_selected = False
 
+        # 시그널과 슬롯 연결
+        self.eeg_uploadWindow.file_selected.connect(self.on_eeg_file_selected)
+        self.uploadWindow.file_selected.connect(self.on_img_file_selected)
+
+
+    def on_img_file_selected(self):
+        self.img_selected = True
+        self.eeg_uploadWindow.enabled = True
+        print("이미지 파일이 선택되었습니다. 이제 EEG 파일을 선택할 수 있습니다.")
+
+
+    def on_eeg_file_selected(self):
+        if self.img_selected:
+            self.STARTBUTTON()
+        else:
+            print("먼저 이미지 파일을 선택하세요.")
+
+
+    def STARTBUTTON(self):
+        # STARTBUTTON 로직
+        print("STARTBUTTON 함수가 실행되었습니다.")
+
+        # ... additional logic ...
     def EEG_WIDGET_CLEAR(self, button):
         # 버튼 클릭시 eeg_graph WIDGET 초기화
         self.eeg_widget.clear()
@@ -102,11 +127,11 @@ class MainWindow(QMainWindow):
 
     # 서버에서 받은 EEG 그래프 표시
     def EEG_GRAPH(self, raw_eeg):
-        if isinstance(raw_eeg, Raw):  # 전달된 데이터가 numpy 배열인 경우
-            self.plotter = EEGPlotter(self.eeg_widget, raw_eeg)  # EEGPlotter 객체 생성
-            self.plotter.regionChanged.connect(self.TOPO_SHOW)  # 영역 변경 신호에 topo_show 함수 연결
+        if isinstance(raw_eeg, Raw):
+            self.plotter = EEGPlotter(self.eeg_widget, raw_eeg)
+            self.plotter.regionChanged.connect(self.TOPO_SHOW)
         else:
-            print("Main.py Alert : EEG_GRAPH에 전달된 데이터는 numpy 배열이 아닙니다. 수신된 데이터 유형:", type(raw_eeg))
+            print("EEG_GRAPH is not a NumPy array. TYPE:", type(raw_eeg))
 
     # Topomap 표시 함수
     def TOPO_SHOW(self, tmin, tmax):

@@ -13,6 +13,7 @@ from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 
 
 class UPLOADWINDOW_IMG(QDialog):  # 업로드 창
+    file_selected = pyqtSignal()  # 시그널 정의
     def __init__(self):
         super(UPLOADWINDOW_IMG, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
@@ -23,17 +24,22 @@ class UPLOADWINDOW_IMG(QDialog):  # 업로드 창
 
     def OPEN_IMAGE_FILE_DIALOG(self, event):
         OPEN_FILE_DIALOG(self, 'Image file Open', 'Image files (*.png *.jpg *.jpeg *.bmp);', self.lineEdit)
-
+        self.file_selected.emit()  # 시그널 발행
 
 class UPLOADWINDOW_EEG(QDialog):
+    # EEG 데이터 수신 시그널 (Raw type)
     eegDataReceived = pyqtSignal(Raw)
-    selectDataReceived = pyqtSignal(Raw)
+    # 채널 수 변경 수신 시그널
+    selectChannelReceived = pyqtSignal(Raw)
+    # 이미지 데이터 수신 시그널
     imageDataReceived = pyqtSignal(list)
-
+    # 버튼 활성화 시그널
+    file_selected = pyqtSignal()
     def __init__(self):
         super(UPLOADWINDOW_EEG, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
 
+        self.enabled = False  # EEG 파일 선택 가능 여부
         self.filePath = ""
         self.raw = None
         self.response_bytes = None
@@ -44,8 +50,13 @@ class UPLOADWINDOW_EEG(QDialog):
         self.EEG_upload_btn.clicked.connect(self.EEG_DATALOAD)
         self.network_manager = QNetworkAccessManager(self)
 
+
     def OPEN_EEG_FILE_DIALOG(self, event):
+        if not self.enabled:
+            print("먼저 이미지 파일을 선택하세요.")
+            return
         OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG file (*.fif);', self.lineEdit, self.EEG_DATALOAD)
+        self.file_selected.emit()  # 시그널 발행
 
     def EEG_TO_IMAGE_GENERATION(self, number):
         # EEG DATA + NUMBER ==> SERVER transfer
@@ -60,7 +71,7 @@ class UPLOADWINDOW_EEG(QDialog):
         n_ch = int(n_ch.text()[:-2])
         eeg_channels = self.new_raw.info['ch_names'][:n_ch]
         picked_data = self.new_raw.copy().pick_channels(eeg_channels)
-        self.selectDataReceived.emit(picked_data)
+        self.selectChannelReceived.emit(picked_data)
 
     def EEG_DATALOAD(self):
         if self.filePath:
@@ -85,10 +96,10 @@ class UPLOADWINDOW_EEG(QDialog):
 
         # 데이터 전송
         reply = self.network_manager.post(request, json_data.encode('utf-8'))
-        reply.finished.connect(self.HANDLE_RESPON)
+        reply.finished.connect(self.HANDLE_RESPONSE)
 
     # 서버 응답 처리 
-    def HANDLE_RESPON(self):
+    def HANDLE_RESPONSE(self):
         reply = self.sender()
         if reply.error() == QNetworkReply.NetworkError.NoError:
             response_data = reply.readAll()
