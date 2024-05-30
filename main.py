@@ -2,7 +2,7 @@ import time
 import pyqtgraph as pg
 import numpy as np
 
-from mne.io.fiff.raw import Raw
+from mne.io import RawArray
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtGui import *
@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self.eeg_uploadWindow = UPLOADWINDOW_EEG()  # EEG 업로드 창 인스턴스 생성
 
         # UI 요소들을 찾고 연결
-        self.create_image_widget = QLabel(self.findChild(QWidget, 'create_image_widget'))  # 서버에서 받은 이미지를 표시할 레이블
+        self.create_image_widget = QLabel(self.findChild(QWidget, 'create_image_widget'))
         self.create_image_widget.setGeometry(
             0, 0, self.create_image_widget.parent().width(),
             self.create_image_widget.parent().height())  # 레이블 크기 설정
@@ -58,8 +58,6 @@ class MainWindow(QMainWindow):
         self.eeg_uploadWindow.selectChannelReceived.connect(self.EEG_GRAPH)
         # 라디오 버튼 클릭시 graph 위젯 초기화
         self.Radio_btn.buttonClicked.connect(self.EEG_WIDGET_CLEAR)
-
-
         self.startButton.setEnabled(False)  # 시작버튼 비활성화
         self.EEG_upload.setEnabled(False) # EEG Upload 버튼 비활성화
         # 시그널과 슬롯 연결
@@ -67,13 +65,38 @@ class MainWindow(QMainWindow):
         self.uploadWindow.file_selected.connect(self.on_img_file_selected)
 
 
+    def EEG_Header_widget(self):
+        # Header_table 위젯에 대한 참조 생성
+        self.eeg_table_view = self.findChild(QTableView, "Header_eeg_table_view")
+
+        eeg_raw_data = self.eeg_uploadWindow.raw # Upload.py raw
+        print(eeg_raw_data)
+        if eeg_raw_data is not None:
+            self.table_widget = QTableWidget(self.eeg_table_view) # 테이블 위젯 생성
+            self.table_widget.setFixedSize(self.eeg_table_view.size()) # 테이블 크기 설정
+
+            data = [
+                ["Number of Channel", f"{eeg_raw_data.info['nchan']} EEG"],
+                ["Sampling Rate", f"{eeg_raw_data.info['sfreq']} [Hz]"],
+                ["Duration", f"{round(len(eeg_raw_data.times) / eeg_raw_data.info['sfreq'], 4)} [s]"],
+            ]
+            # 데이터 채우기
+            self.table_widget.setRowCount(len(data))
+            self.table_widget.setColumnCount(len(data[0]))
+            for i, row in enumerate(data):
+                for j, item in enumerate(row):
+                    self.table_widget.setItem(i, j, QTableWidgetItem(item))
+
+            # Header_table에 테이블 위젯 추가
+            layout = QVBoxLayout(self.eeg_table_view)
+            layout.addWidget(self.table_widget)
     def on_img_file_selected(self): # 이미지 파일 업로드 완료시 EEG 업로드 버튼 활성화
         self.EEG_upload.setEnabled(True)
-        print("이미지 파일이 선택되었습니다. 이제 EEG 파일을 선택할 수 있습니다.")
+
 
     def on_eeg_file_selected(self): # EEG 파일 업로드 완료시 START 버튼 활성화
         self.startButton.setEnabled(True)  # 시작버튼 활성화
-
+        self.EEG_Header_widget()
     def EEG_WIDGET_CLEAR(self, button):
         # 버튼 클릭시 eeg_graph WIDGET 초기화
         self.eeg_widget.clear()
@@ -115,9 +138,22 @@ class MainWindow(QMainWindow):
             self.imageSlider.current_index = 0
             self.imageSlider.images_slice()
 
-    # 서버에서 받은 EEG 그래프 표시
+        # score frame 활성화
+        self.evaluation_score_frame()
+
+    def evaluation_score_frame(self):
+        # evaluation score 함수
+        self.score_label = QLabel(self) # QLabel 생성
+        score = 85  # 임시 데이터
+        self.score_label.setText(str(score))
+
+        # QLabel을 evaluation_score QFrame에 추가
+        layout = QVBoxLayout(self.evaluation_score)
+        layout.addWidget(self.score_label)
+
+        # 서버에서 받은 EEG 그래프 표시
     def EEG_GRAPH(self, raw_eeg):
-        if isinstance(raw_eeg, Raw):
+        if isinstance(raw_eeg, RawArray):
             self.plotter = EEGPlotter(self.eeg_widget, raw_eeg)
             self.plotter.regionChanged.connect(self.TOPO_SHOW)
         else:

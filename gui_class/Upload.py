@@ -5,7 +5,8 @@ import base64
 import zlib
 import json
 import pickle
-from mne.io.fiff.raw import Raw
+from mne.io import RawArray
+from mne.io.fiff import Raw
 from mne import Info
 from PyQt6 import uic, QtCore
 from PyQt6.QtCore import pyqtSignal, QUrl
@@ -24,14 +25,16 @@ class UPLOADWINDOW_IMG(QDialog):  # 업로드 창
         self.btn_UP_open.clicked.connect(self.close)
 
     def OPEN_IMAGE_FILE_DIALOG(self, event):
-        OPEN_FILE_DIALOG(self, 'Image file Open', 'Image files (*.png *.jpg *.jpeg *.bmp);', self.lineEdit)
+        # 현재 작업 디렉토리에서 'images' 폴더로 설정
+        images_dir = os.path.join(os.getcwd(), 'images')
+        OPEN_FILE_DIALOG(self, 'Image file Open', 'Image files (*.png *.jpg *.jpeg *.bmp);', self.lineEdit, images_dir)
         self.file_selected.emit()  # 시그널 발행
 
 class UPLOADWINDOW_EEG(QDialog):
-    # EEG 데이터 수신 시그널 (Raw type)
-    eegDataReceived = pyqtSignal(Raw)
+    # EEG 데이터 수신 시그널 (RawArray type)
+    eegDataReceived = pyqtSignal(RawArray)
     # 채널 수 변경 수신 시그널
-    selectChannelReceived = pyqtSignal(Raw)
+    selectChannelReceived = pyqtSignal(RawArray)
     # 이미지 데이터 수신 시그널
     imageDataReceived = pyqtSignal(list)
     # 버튼 활성화 시그널
@@ -50,9 +53,10 @@ class UPLOADWINDOW_EEG(QDialog):
         self.EEG_upload_btn.clicked.connect(self.EEG_DATALOAD)
         self.network_manager = QNetworkAccessManager(self)
 
-
     def OPEN_EEG_FILE_DIALOG(self, event):
-        OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG file (*.fif);', self.lineEdit, self.EEG_DATALOAD)
+        # 현재 작업 디렉토리에서 'eeg_files' 폴더로 설정
+        eeg_files_dir = os.path.join(os.getcwd(), 'eeg_files')
+        OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG files (*.fif);', self.lineEdit, eeg_files_dir, self.EEG_DATALOAD)
         self.file_selected.emit()  # 시그널 발행
 
     def EEG_TO_IMAGE_GENERATION(self, number):
@@ -78,7 +82,7 @@ class UPLOADWINDOW_EEG(QDialog):
                 if isinstance(self.raw, Raw):
                     print("데이터 로드 중")
                 else:
-                    print("로드된 데이터는 Raw 객체가 아닙니다. 데이터 형식:", type(self.raw))
+                    print("로드된 데이터는 raw 객체가 아닙니다. 데이터 형식:", type(self.raw))
             except Exception as e:
                 print("EEG 데이터 로딩 오류:", e)
             finally:
@@ -135,9 +139,8 @@ class UPLOADWINDOW_EEG(QDialog):
             print("Network error occurred:", reply.errorString())
 
 
-def OPEN_FILE_DIALOG(parent, dialog_title, filters, line_edit, callback=None):
-    current_directory = os.getcwd()  # 현재 작업 디렉토리 가져오기
-    fname, _ = QFileDialog.getOpenFileName(parent, dialog_title, current_directory, filters)
+def OPEN_FILE_DIALOG(parent, dialog_title, filters, line_edit, default_dir, callback=None):
+    fname, _ = QFileDialog.getOpenFileName(parent, dialog_title, default_dir, filters)
     if fname:
         line_edit.setText(fname)
         parent.filePath = fname
