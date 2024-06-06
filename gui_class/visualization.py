@@ -11,25 +11,33 @@ from PyQt6.QtCore import pyqtSignal, QObject
 class EEGPlotter(QObject):
     regionChanged = pyqtSignal(float, float)  # 신호 정의: 두 개의 float 값 및 EEG Info를 전달
 
-    def __init__(self, widget, raw_eeg):
+    def __init__(self, widget, generate_sr_eeg, ground_truth_eeg = None):
         super().__init__()
         self.widget = widget
-        self.raw_eeg = raw_eeg
+        self.generate_sr_eeg = generate_sr_eeg
+        self.ground_truth_eeg = ground_truth_eeg
         self.region = pg.LinearRegionItem()
         self.init_plot()
 
     def init_plot(self):
-        channel_names = self.raw_eeg.info["ch_names"]
-        sfreq = self.raw_eeg.info["sfreq"]
+        channel_names = self.generate_sr_eeg.info["ch_names"]
+        sfreq = self.generate_sr_eeg.info["sfreq"]
 
-        num_ch, self.num_samples = self.raw_eeg.get_data().shape
+        num_ch, self.num_samples = self.generate_sr_eeg.get_data().shape
         time = self.num_samples / sfreq
         spacing = 3
 
         for ch_idx in range(num_ch):
-            sample = self.raw_eeg.get_data()[ch_idx]
-            sample_minmax = (sample - sample.mean()) / sample.std()
-            self.widget.plot(np.arange(self.num_samples), sample_minmax + ch_idx * spacing, pen=pg.mkPen('r'))
+            # 생성된 (Ground Truth) EEG 시각화 코드
+            generate_sample = self.generate_sr_eeg.get_data()[ch_idx]
+            generate_sample_minmax = (generate_sample - generate_sample.mean()) / generate_sample.std()
+            self.widget.plot(np.arange(self.num_samples), generate_sample_minmax + ch_idx * spacing, pen=pg.mkPen('b'))
+
+            # 정답(Ground Truth) EEG 시각화 코드
+            if self.ground_truth_eeg is not None:
+                gt_sample = self.ground_truth_eeg.get_data()[ch_idx]
+                gt_sample_minmax = (gt_sample - gt_sample.mean()) / gt_sample.std()
+                self.widget.plot(np.arange(self.num_samples), gt_sample_minmax + ch_idx * spacing, pen=pg.mkPen('b'))
 
         self.widget.setLabel("left", "Amplitude")
         self.widget.setLabel("bottom", "Time [s]")

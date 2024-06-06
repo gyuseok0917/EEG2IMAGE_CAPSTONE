@@ -119,57 +119,41 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
-     <widget class="QWidget" name="create_image_widget_2" native="true">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
-        <x>629</x>
-        <y>39</y>
-        <width>441</width>
-        <height>411</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QWidget" name="create_image_widget_3" native="true">
-      <property name="geometry">
-       <rect>
-        <x>629</x>
-        <y>69</y>
-        <width>441</width>
-        <height>411</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QWidget" name="verticalLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>0</y>
-        <width>91</width>
-        <height>181</height>
+        <x>30</x>
+        <y>20</y>
+        <width>111</width>
+        <height>131</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QPushButton" name="uploadButton">
-         <property name="text">
-          <string>Image Open</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Img No.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="ImageNumber">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QPushButton" name="EEG_upload">
          <property name="text">
           <string>EEG Open</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="ImageNumber">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>10</number>
          </property>
         </widget>
        </item>
@@ -376,7 +360,7 @@
     <property name="midLineWidth">
      <number>1</number>
     </property>
-    <widget class="QFrame" name="origin_image">
+    <widget class="QFrame" name="create_image_frame">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -406,7 +390,7 @@
      <property name="midLineWidth">
       <number>1</number>
      </property>
-     <widget class="QFrame" name="origin_image_frame">
+     <widget class="QFrame" name="create_image_widget">
       <property name="geometry">
        <rect>
         <x>-1</x>
@@ -418,7 +402,7 @@
       <layout class="QGridLayout" name="gridLayout"/>
      </widget>
     </widget>
-    <widget class="QFrame" name="create_image">
+    <widget class="QTabWidget" name="tab_widget">
      <property name="geometry">
       <rect>
        <x>550</x>
@@ -427,33 +411,44 @@
        <height>411</height>
       </rect>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
      </property>
-     <property name="lineWidth">
-      <number>1</number>
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <property name="midLineWidth">
-      <number>1</number>
+     <property name="tabsClosable">
+      <bool>false</bool>
      </property>
-     <widget class="QWidget" name="create_image_widget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>-1</x>
-        <y>-1</y>
-        <width>441</width>
-        <height>411</height>
-       </rect>
-      </property>
+     <property name="movable">
+      <bool>false</bool>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="Image_tab" native="true">
+      <attribute name="title">
+       <string>Image(GT)</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_1">
+      <attribute name="title">
+       <string>page1</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>page2</string>
+      </attribute>
      </widget>
     </widget>
     <widget class="QPushButton" name="prevBtn">
      <property name="geometry">
       <rect>
-       <x>520</x>
+       <x>460</x>
        <y>180</y>
        <width>20</width>
        <height>23</height>
@@ -466,7 +461,7 @@
     <widget class="QPushButton" name="nextBtn">
      <property name="geometry">
       <rect>
-       <x>520</x>
+       <x>460</x>
        <y>210</y>
        <width>20</width>
        <height>23</height>
@@ -497,6 +492,8 @@
     <property name="title">
      <string>Option</string>
     </property>
+    <addaction name="Grount_Truth_EEG_OPEN"/>
+    <addaction name="Ground_Truth_Image_OPEN"/>
    </widget>
    <widget class="QMenu" name="menuTool">
     <property name="title">
@@ -510,9 +507,9 @@
     <addaction name="actionconnecting"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuOption"/>
    <addaction name="menuTool"/>
    <addaction name="menuServer"/>
+   <addaction name="menuOption"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionconnecting">
@@ -533,6 +530,16 @@
   <action name="New_open">
    <property name="text">
     <string>New Open</string>
+   </property>
+  </action>
+  <action name="Grount_Truth_EEG_OPEN">
+   <property name="text">
+    <string>Ground Truth (EEG) Compare</string>
+   </property>
+  </action>
+  <action name="Ground_Truth_Image_OPEN">
+   <property name="text">
+    <string>Ground Truth (Image) Compare</string>
    </property>
   </action>
  </widget>

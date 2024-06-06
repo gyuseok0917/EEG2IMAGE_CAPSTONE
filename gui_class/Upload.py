@@ -30,6 +30,50 @@ class UPLOADWINDOW_IMG(QDialog):  # 업로드 창
         OPEN_FILE_DIALOG(self, 'Image file Open', 'Image files (*.png *.jpg *.jpeg *.bmp);', self.lineEdit, images_dir)
         self.file_selected.emit()  # 시그널 발행
 
+class GT_EEG_UPLOAD(QDialog):
+    # compare GT EEG 시그널
+
+    GT_eegDataReceived = pyqtSignal(Raw)
+    def __init__(self):
+        super(GT_EEG_UPLOAD, self).__init__()
+        uic.loadUi('./ui/uploadWindow.ui', self)
+
+        self.filePath = ""
+        self.raw = None
+        self.lineEdit = self.findChild(QLineEdit, 'lineEdit')
+        self.lineEdit.mousePressEvent = self.OPEN_GT_EEG_FILE_DIALOG
+        self.EEG_GT_upload_btn = self.findChild(QPushButton, 'btn_UP_open')
+        self.EEG_GT_upload_btn.clicked.connect(self.EEG_GT_DATALOAD)
+
+
+    def OPEN_GT_EEG_FILE_DIALOG(self, event):
+        eeg_files_dir = os.path.join(os.getcwd(), 'eeg_files')
+        OPEN_FILE_DIALOG(self, 'EEG GT file Open', 'EEG files (*.fif);', self.lineEdit, eeg_files_dir,
+                         self.EEG_GT_DATALOAD)
+
+    def EEG_GT_DATALOAD(self):
+        if self.filePath:
+            try:
+                self.raw = mne.io.read_raw_fif(self.filePath, preload=True)
+                self.raw = self.raw.pick_types(eeg=True)
+                print(self.filePath)
+                if isinstance(self.raw, Raw):
+                    print("GT EEG 데이터 로드 중")
+                    self.load_GT_EEG_data()
+                else:
+                    print("로드된 데이터는 raw 객체가 아닙니다. 데이터 형식:", type(self.raw))
+            except Exception as e:
+                print("GT EEG 데이터 로딩 오류:", e)
+            finally:
+                self.close()
+
+    def load_GT_EEG_data(self):
+        try:
+            self.GT_eegDataReceived.emit(self.raw)  # RawArray 형식으로 시그널 emit
+        except Exception as e:
+            print("GT EEG 데이터 로딩 오류:", e)
+
+
 class UPLOADWINDOW_EEG(QDialog):
     # EEG 데이터 수신 시그널 (RawArray type)
     eegDataReceived = pyqtSignal(RawArray)
@@ -39,11 +83,12 @@ class UPLOADWINDOW_EEG(QDialog):
     imageDataReceived = pyqtSignal(list)
     # 버튼 활성화 시그널
     file_selected = pyqtSignal()
-    def __init__(self):
+    def  __init__(self):
         super(UPLOADWINDOW_EEG, self).__init__()
         uic.loadUi('./ui/uploadWindow.ui', self)
 
         self.filePath = ""
+
         self.raw = None
         self.response_bytes = None
         self.new_raw = None
@@ -53,11 +98,13 @@ class UPLOADWINDOW_EEG(QDialog):
         self.EEG_upload_btn.clicked.connect(self.EEG_DATALOAD)
         self.network_manager = QNetworkAccessManager(self)
 
+
+
     def OPEN_EEG_FILE_DIALOG(self, event):
         # 현재 작업 디렉토리에서 'eeg_files' 폴더로 설정
         eeg_files_dir = os.path.join(os.getcwd(), 'eeg_files')
         OPEN_FILE_DIALOG(self, 'EEG file Open', 'EEG files (*.fif);', self.lineEdit, eeg_files_dir, self.EEG_DATALOAD)
-        self.file_selected.emit()  # 시그널 발행
+        self.file_selected.emit()  # 업로드 완료 시그널 발행 -> start 버튼 활성화
 
     def EEG_TO_IMAGE_GENERATION(self, number):
         # EEG DATA + NUMBER ==> SERVER transfer
@@ -87,6 +134,7 @@ class UPLOADWINDOW_EEG(QDialog):
                 print("EEG 데이터 로딩 오류:", e)
             finally:
                 self.close()
+
 
     # EEG DATA 서버 전송
     def SEND_DATA(self, json_data):
