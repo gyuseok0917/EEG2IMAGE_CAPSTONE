@@ -318,9 +318,10 @@ class EEG2ImageDataset(Dataset):
         return self.eegs.shape[0]
 
     def __getitem__(self, idx):
-        eeg   = self.eegs[idx]
-        norm  = torch.max(eeg) / 2.0
-        eeg   =  ( eeg - norm ) / norm
+        # eeg   = self.eegs[idx]
+        # norm  = torch.max(eeg) / 2.0
+        # eeg   =  ( eeg - norm ) / norm
+        eeg = (eeg - eeg.mean()) / eeg.std()
         image = self.images[idx]
         label = self.labels[idx]
         con   = self.eeg_feat[idx]
