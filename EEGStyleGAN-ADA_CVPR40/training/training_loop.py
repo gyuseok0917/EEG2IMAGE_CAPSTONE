@@ -101,7 +101,7 @@ def training_loop(
     loss_kwargs             = {},       # Options for loss function.
     metrics                 = [],       # Metrics to evaluate during training.
     random_seed             = 0,        # Global random seed.
-    num_gpus                = 1,        # Number of GPUs participating in the training.
+    num_gpus                = 2#1,        # Number of GPUs participating in the training.
     rank                    = 0,        # Rank of the current process in [0, num_gpus[.
     batch_size              = 4,        # Total batch size for one training iteration. Can be larger than batch_gpu * num_gpus.
     batch_gpu               = 4,        # Number of samples processed at a time by one GPU.
